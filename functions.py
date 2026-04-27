@@ -1,3 +1,4 @@
+#Essa função serve para validar o cpf
 def validar_cpf(cpf: str) -> bool:
     numeros = ""
     for ch in cpf:
