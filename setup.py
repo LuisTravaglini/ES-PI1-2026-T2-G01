@@ -1,3 +1,9 @@
+import functions
+from conexao import get_conexao
+
+conexao = get_conexao()
+cursor = conexao.cursor()
+
 opcao = 0
 while opcao == 0: 
     print("\n=== URNA ELETRÔNICA ===")
@@ -28,7 +34,18 @@ while opcao == 1:
 
         match opc_candidato:
             case 1:
-                print("...")
+                print("=== Cadastro De candidato ===")
+                cpf = input("Digite o CPF do candidato: ")
+                if functions.validar_cpf(cpf):
+                nome = input("Digite o nome do candidato: ")
+                try:
+                    cursor.execute("INSERT INTO candidatos (cpf, nome) VALUES (%s, %s)", (cpf, nome))
+                    conexao.commit()
+                    print("Candidato cadastrado com sucesso!")
+                except Exception as e:
+                    print("Erro ao cadastrar:", e)
+                else:
+                    print("CPF inválido.")
             case 2:
                 print("...")
             case 3:
