@@ -1,8 +1,16 @@
+#Conexão com o banco de dados e com o arquivo "functions"
+
 import functions
 from conexao import get_conexao
 
 conexao = get_conexao()
 cursor = conexao.cursor()
+if conexao.is_connected():
+    print("Conexão bem sucedida")
+else:
+    print("Erro")
+
+#Menús
 
 opcao = 0
 while opcao == 0: 
@@ -13,6 +21,7 @@ while opcao == 0:
     opcao = int(input("Selecione uma opção: "))
 
 while opcao == 1:
+    #Menu gerenciamento
     print("=== OPÇÕES DE GERENCIAMENTO ===")
     print("1 - Candidato.")
     print("2 - Eleitor")
@@ -23,42 +32,24 @@ while opcao == 1:
         opcao = 0
         
     while gerenciamento == 1:
-
+        #menu candidato
         print("=== OPÇÕES DO CANDIDATO ===")
-        print("1 - Cadastrar Candidato")
-        print("2 - Editar informações")
-        print("3 - Excluir Candidato")
-        print("4 - voltar") 
+        print("1 - Listar Candidato")
+        print("2 - voltar") 
 
         opc_candidato = int(input("Selecione uma opção: "))
-
         match opc_candidato:
             case 1:
-                print("=== Cadastro De candidato ===")
-                cpf = input("Digite o CPF do candidato: ")
-                if functions.validar_cpf(cpf):
-                nome = input("Digite o nome do candidato: ")
-                try:
-                    cursor.execute("INSERT INTO candidatos (cpf, nome) VALUES (%s, %s)", (cpf, nome))
-                    conexao.commit()
-                    print("Candidato cadastrado com sucesso!")
-                except Exception as e:
-                    print("Erro ao cadastrar:", e)
-                else:
-                    print("CPF inválido.")
-            case 2:
-                print("...")
-            case 3:
-                print("...")
-            case 4: 
+                pass
+            case 2: 
                 gerenciamento = 0
                 opcao = 1
     
 
     while gerenciamento == 2:
-
+        #menu eleitor
         print("=== OPÇÕES DO ELEITOR ===")
-        print("1 - lista de eleitores")
+        print("1 - Lista de eleitores")
         print("2 - Cadastro(Novo eleitor)")
         print("3 - voltar")
 
@@ -66,17 +57,73 @@ while opcao == 1:
 
         match eleitor:
             case 1:
-                print("1 - Editar Eleitores")
+                #menu lista de eleitores
+                print("1 - listar Eleitores")
                 print("2 - Buscar Eleitor por CPF ou Titulo")
+
+                lista_e = int(input("Selecione uma opção: "))
+                match lista_e:
+                    case 1:
+                        #Listar
+                        cursor.execute("SELECT nome_Completo FROM Eleitor")
+                        for i in cursor.fetchall():
+                            print(i[0])
+
+                    case 2:
+                        #Buscar
+                        print("1- Buscar por CPF")
+                        print("2- Buscar por Título")
+                        busca = int(input("Selelcione uma opção: "))
+                        match busca:
+
+                            case 1:
+                                query = "SELECT nome_Completo FROM Eleitor WHERE CPF = %s"
+                                CPF_input = input("Digite o CPF: ")
+                                cursor.execute(query,(CPF_input,))
+                                for i in cursor.fetchall():
+                                    print(i[0])
+
+                            case 2: 
+                                query = "SELECT nome_Completo FROM Eleitor WHERE titulo = %s"
+                                titulo_input = input("Digite o título de eleitor: ")
+                                cursor.execute(query,(titulo_input,))
+                                for i in cursor.fetchall():
+                                    print(i[0])
+
             case 2:
-                Cpf = input("DIgite seu CPF: ")
+                #menu Cadastro(eleitor)
+                print("=== Cadastro De Eleitor ===")
+                cpf = input("Digite o CPF do eleitor: ")
+                #Chama a função que valida CPF
+                if functions.validar_cpf(cpf):
+                    titulo = input("Digite o título: ")
+                    #Chama a função que valida titulo
+                    if functions.validar_titulo(titulo):
+                        nome = input("Digite o nome do eleitor: ")
+                        chave_Acesso = input("Digite a chave de acesso: ")
+                        tipo_Mesario = bool(input("Mesário: "))
+                    else:
+                        print("Título Inválido")
+                else:
+                    print("CPF inválido.")
+
+                #Envia os inputs para o BD
+                try:
+                    cursor.execute("INSERT INTO eleitor (CPF, nome_Completo, titulo, chave_Acesso, tipo_Mesario) VALUES (%s, %s)", (cpf, nome, titulo, chave_Acesso, tipo_Mesario))
+                    conexao.commit()
+                    print("Candidato cadastrado com sucesso!")
+                except Exception as erro:
+                    print("Erro ao cadastrar:", erro)
+                
             case 3:
+                #Voltar para menu eleitor
                 gerenciamento = 0
                 opcao = 1
 
 
 while opcao == 2:
-
+    
+    #Menu Votação
     print("=== OPÇÕES DE VOTAÇÃO ===")
     print("1 - Listar candidatos")
     print("2 - Sistema de votação")
@@ -85,6 +132,7 @@ while opcao == 2:
     votacao = int(input("Selecione uma opção: "))
 
     while votacao == 1:
+        #Lista de candidatos
         print ("Kaiky - 13")
         print ("Luis - 25")
         print ("Jõao - 17")
@@ -92,7 +140,7 @@ while opcao == 2:
         opcao = 2
 
     while votacao == 2:
-            
+        #Sistema de votação
         print ("1 - Iniciar Votação") 
         print ("2 - Auditoria")
         print ("3 - Resultado")
