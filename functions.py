@@ -43,16 +43,16 @@ def validar_titulo(titulo: str) -> bool:
     # Calcula dígitos verificadores
     soma1 = 0
     for i in range(8):
-        soma1 += int(numeros[i]) * (9 - i)
+        soma1 += int(numeros[i]) * (8 - i)
     digito1 = (soma1 % 11) % 10
 
     soma2 = 0
     for i in range(9):
-        soma2 += int(numeros[i]) * (10 - i)
+        soma2 += int(numeros[i]) * (9 - i)
     digito2 = (soma2 % 11) % 10
 
     # Confere se os dígitos calculados batem com os informados
-    return digito1 == int(numeros[10]) and digito2 == int(numeros[11])
+    return digito1 == int(numeros[8]) and digito2 == int(numeros[9])
 
 def ler_opcao(opcao_valida):
 
