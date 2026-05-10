@@ -124,36 +124,42 @@ while opcao == 1:
 while opcao == 2:
     
     #Menu Votação
+
+    votacao_aberta = False
+
     print("=== OPÇÕES DE VOTAÇÃO ===")
-    print("1 - Listar candidatos")
-    print("2 - Sistema de votação")
-    print("3 - Voltar")
+    print("1 - Sistema de votação")
+    print("2 - Voltar")
 
     votacao = int(input("Selecione uma opção: "))
 
     while votacao == 1:
-        #Lista de candidatos
-        print ("Kaiky - 13")
-        print ("Luis - 25")
-        print ("Jõao - 17")
-        votacao = 0
-        opcao = 2
-
-    while votacao == 2:
         #Sistema de votação
-        print ("1 - Iniciar Votação") 
-        print ("2 - Auditoria")
+        print ("1 - Abertura Votação") 
+        print ("2 - Encerramento Votação ")
+        print ("3 - Auditoria")
+        print ("4 - Resultado")
         print ("3 - Resultado")
 
         sist_votacao = int(input("Selecione uma opção: "))
 
         match sist_votacao:
             case 1:
-                print ("Iniciando Votação...")
+                if votacao_aberta:
+                    print("A votação já está aberta")
+                else:
+                    print ("Votação ABERTA! Votos podem ser registrados")
             case 2: 
-                print ("Iniciando Auditoria...")
+                if not votacao_aberta:
+                    print("A votação ainda não foi aberta")
+                else:
+                    print ("A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
             case 3:
-                print ("Resultados...")
+                if not votacao_aberta:
+                    print ("Para adutitar, a votação precisa estar aberta!")
+                else: 
+                    print ("Iniciando Auditoria...")
             case 4:
+                print("Resultado")
                 votacao = 0
                 opcao = 2
