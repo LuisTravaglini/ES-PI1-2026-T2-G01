@@ -26,8 +26,9 @@ while opcao == 0:
         print("1 - Candidato.")
         print("2 - Eleitor")
         print("3 - Voltar")
-
-        gerenciamento = int(input("Selecione uma opção: "))
+        
+        
+        gerenciamento = functions.ler_opcao(opcao_valida)
         if gerenciamento == 3:
             opcao = 0
             
@@ -37,7 +38,8 @@ while opcao == 0:
             print("1 - Listar Candidato")
             print("2 - voltar") 
 
-            opc_candidato = int(input("Selecione uma opção: "))
+            opcao_valida = [1, 2, 3]
+            opc_candidato = functions.ler_opcao(opcao_valida)
             match opc_candidato:
                 case 1:
                     pass
@@ -52,8 +54,9 @@ while opcao == 0:
             print("1 - Lista de eleitores")
             print("2 - Cadastro(Novo eleitor)")
             print("3 - voltar")
-
-            eleitor = int(input("Selecione uma opção: "))
+            
+            opcao_valida = [1, 2, 3]
+            eleitor = functions.ler_opcao(opcao_valida)
 
             match eleitor:
                 case 1:
@@ -73,7 +76,9 @@ while opcao == 0:
                             #Buscar
                             print("1- Buscar por CPF")
                             print("2- Buscar por Título")
-                            busca = int(input("Selelcione uma opção: "))
+                            
+                            opcao_valida = [1, 2]
+                            busca = function.ler_opcao(opcao_valida)
                             match busca:
 
                                 case 1:

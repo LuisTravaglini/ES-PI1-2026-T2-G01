@@ -54,16 +54,26 @@ def validar_titulo(titulo: str) -> bool:
     # Confere se os dígitos calculados batem com os informados
     return digito1 == int(numeros[8]) and digito2 == int(numeros[9])
 
+
+#validação da opção escolhida pelo usuario.
 def ler_opcao(opcao_valida):
 
     entrada_valida = False
 
+
     while entrada_valida == False:
+
+        #tentar converter input.
         try:
             opcao = int(input("Digite uma das opções: "))
+
+            #verifica se é uma das opções validas.
             if opcao in opcao_valida:
-               entrada_valida = True
+                entrada_valida = True
+                return opcao
+            
             else:
-                print("opção inválida.")
+                print("Opção inválida.")
+        
         except ValueError:
-            print("digite apenas números.")
+            print("Digite apenas números.")
