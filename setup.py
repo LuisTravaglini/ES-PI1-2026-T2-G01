@@ -96,10 +96,19 @@ while opcao == 0:
                     
                     print("=== Cadastro De Eleitor ===")
                     cpf = input("Digite o CPF do eleitor: ")
+
                     #Chama a função que valida CPF
-                    if functions.validar_cpf(cpf):
+                    while not functions.validar_cpf(cpf):
+                        print("CPF inválido! Insira novamente um CPF válido para dar continuidade.")
+                        cpf = input("Digite o CPF do eleitor: ")
+
+                    titulo = input("Digite o título: ")
+
+                    #Chama a função que valida titulo
+                    while not functions.validar_titulo(titulo):
+                        print("Titulo INVÁLIDO! Insira novamente um TÍTULO válido para dar continuidade.")
                         titulo = input("Digite o título: ")
-                        #Chama a função que valida titulo
+
                         if functions.validar_titulo(titulo):
                             nome = input("Digite o nome do eleitor: ")
                             chave_Acesso = input("Digite a chave de acesso: ")
@@ -111,7 +120,7 @@ while opcao == 0:
 
                     #Envia os inputs para o BD
                     try:
-                        cursor.execute("INSERT INTO eleitor (CPF, nome_Completo, titulo, chave_Acesso, tipo_Mesario) VALUES (%s, %s)", (cpf, nome, titulo, chave_Acesso, tipo_Mesario))
+                        cursor.execute("INSERT INTO eleitor (CPF, nome_Completo, titulo, chave_Acesso, tipo_Mesario) VALUES (%s, %s, %s, %s, %s)", (cpf, nome, titulo, chave_Acesso, tipo_Mesario))
                         conexao.commit()
                         print("Candidato cadastrado com sucesso!")
                     except Exception as erro:
@@ -149,7 +158,7 @@ while opcao == 0:
             match sist_votacao:
                 case 1:
                     if votacao_aberta:
-                        ocorrencia = print("⚠️Tentativa de abrir votação já aberta")
+                        ocorrencia = print("⚠️ Tentativa de abrir votação já aberta")
                         auditoria.append(ocorrencia)
                     else:
                         ocorrencia = print (" ✅ Votação ABERTA! Votos podem ser registrados")
