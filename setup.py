@@ -168,6 +168,83 @@ while opcao == 0:
                     else:
                         ocorrencia = print (" ✅ Votação ABERTA! Votos podem ser registrados")
                         auditoria.append(ocorrencia)
+                        titulo = input("Digite seu título: ")
+                        chave = input("Digite sua chave de acesso: ")
+
+                        # procura eleitor
+                        query = """
+                        SELECT id_eleitor
+                        FROM Eleitor
+                        WHERE titulo = %s
+                        AND chave_Acesso = %s
+                        """
+
+                        cursor.execute(query, (titulo, chave))
+
+                        eleitor = cursor.fetchone()
+
+                        if eleitor is None:
+                            print("Dados inválidos!")
+
+                        else:
+
+                            id_eleitor = eleitor[0]
+
+                            # verifica se já votou
+                            query = """
+                            SELECT *
+                            FROM registro_Voto
+                            WHERE id_eleitor = %s
+                            """
+
+                            cursor.execute(query, (id_eleitor,))
+
+                            ja_votou = cursor.fetchone()
+
+                            if ja_votou:
+                                print("Esse eleitor já votou!")
+
+                            else:
+
+                                numero = int(input("Digite o número do candidato: "))
+
+                                # verifica se candidato existe
+                                query = """
+                                SELECT *
+                                FROM candidato
+                                WHERE numero_Candidato = %s
+                                """
+
+                                cursor.execute(query, (numero,))
+
+                                candidato = cursor.fetchone()
+
+                                if candidato is None:
+                                    print("Candidato não encontrado!")
+
+                                else:
+
+                                    # REGISTRA O VOTO
+                                    query = """
+                                    INSERT INTO registro_Voto
+                                    (numero_Candidato, id_eleitor)
+                                    VALUES (%s, %s)
+                                    """
+
+                                    cursor.execute(query, (numero, id_eleitor))
+
+                                    # SOMA +1 NO TOTAL DE VOTOS
+                                    query = """
+                                    UPDATE candidato
+                                    SET votos = votos + 1
+                                    WHERE numero_Candidato = %s
+                                    """
+
+                                    cursor.execute(query, (numero,))
+
+                                    conexao.commit()
+
+                                    print("Voto computado com sucesso!")
                 case 2: 
                     if not votacao_aberta:
                         ocorrencia = print(" ⚠️ Tentativa de encerrar votação ainda não aberta!")
