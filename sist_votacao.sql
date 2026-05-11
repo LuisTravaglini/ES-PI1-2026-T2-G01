@@ -1,7 +1,6 @@
-/*insert into eleitor value(
-0, '40580282899', 'Kaiky de Mello Rosa Severino', '123456789', 'ka99', false
-)*/
-
-select * from eleitor
-
-
+insert into candidato values 
+(0, 16, 'Pumapjl', 'Febre90s'),
+(0, 20, 'Predella', 'Costa Gold'),
+(0, 45, 'Nog', 'Costa Gold'),
+(0, 14, 'Brown', 'Racionais'),
+(0, 11, 'Jean Tassy', 'The gust MCs')
