@@ -4,9 +4,10 @@ USE sist_votacao;
 
 CREATE TABLE Candidato(
 id_candidato int primary key auto_increment,
-numero_Candidato int not null,
+numero_Candidato int unique not null,
 nome_Completo varchar(100) not null,
-partido varchar(20) not null
+partido varchar(20) not null,
+votos int
 );
 
 CREATE TABLE Eleitor(
@@ -19,11 +20,13 @@ tipo_mesario boolean not null
 );
 
 CREATE TABLE registro_Voto(
-id int primary key not null auto_increment,
-numero_Candidato int unique not null,
-id_eleitor int not null,
-FOREIGN KEY (id_eleitor) REFERENCES Eleitor(id_eleitor),
-foreign key (numero_Candidato) references Candidato(numero_Candidato),
-data_voto TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-unique(id_eleitor)
-)
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    numero_Candidato INT NOT NULL,
+    id_eleitor INT NOT NULL,
+    FOREIGN KEY (id_eleitor)
+        REFERENCES Eleitor(id_eleitor),
+    FOREIGN KEY (numero_Candidato)
+        REFERENCES Candidato(numero_Candidato),
+    data_voto TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(id_eleitor)
+);
