@@ -117,30 +117,32 @@ while opcao == 0:
 
                     titulo = input("Digite o título: ")
 
-                    #Chama a função que valida titulo
+                    # Enquanto o título não for válido, pede novamente
                     while not functions.validar_titulo(titulo):
                         functions.limpar_menu()
-                        print("Titulo INVÁLIDO! Insira novamente um TÍTULO válido para dar continuidade.")
+                        print("Título INVÁLIDO! Insira novamente um TÍTULO válido para dar continuidade.")
                         titulo = input("Digite o título: ")
 
-                        if functions.validar_titulo(titulo):
-                            nome = input("Digite o nome do eleitor: ")
-                            chave_Acesso = functions.gerar_chave(nome)
-                            print(f"Sua chave de acesso é: {chave_Acesso}")
-                            tipo_Mesario = bool(input("Mesário: "))
-                        else:
-                            print("Título Inválido")
-                    else:
-                        print("CPF inválido.")
+                    # Se chegou aqui, o título é válido
+                    nome = input("Digite o nome do eleitor: ")
+                    chave_Acesso = functions.gerar_chave(nome)
+                    print(f"Sua chave de acesso é: {chave_Acesso}")
 
-                    #Envia os inputs para o BD
+                    # Pergunta se é mesário (sim/não)
+                    resp = input("Mesário (s/n): ").strip().lower()
+                    tipo_Mesario = resp == "s"
+
+                    # Envia os inputs para o BD
                     try:
-                        cursor.execute("INSERT INTO eleitor (CPF, nome_Completo, titulo, chave_Acesso, tipo_Mesario) VALUES (%s, %s, %s, %s, %s)", (cpf, nome, titulo, chave_Acesso, tipo_Mesario))
+                        cursor.execute(
+                            "INSERT INTO eleitor (CPF, nome_Completo, titulo, chave_Acesso, tipo_Mesario) VALUES (%s, %s, %s, %s, %s)",
+                            (cpf, nome, titulo, chave_Acesso, tipo_Mesario)
+                        )
                         conexao.commit()
-                        print("Candidato cadastrado com sucesso!")
+                        print("Eleitor cadastrado com sucesso!")
                     except Exception as erro:
                         print("Erro ao cadastrar:", erro)
-                    
+
                 case 3:
                     functions.limpar_menu()
                     #Voltar para menu eleitor
