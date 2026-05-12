@@ -1,4 +1,5 @@
 import random
+import os
 
 #Validação do CPF
 def validar_cpf(cpf: str) -> bool:
@@ -86,10 +87,12 @@ def ler_opcao(opcao_valida):
 
 #função de gerar chave de acessoo
 def gerar_chave(nome: str) -> str:
+    
     # Pega as duas primeiras letras do nome
     lista_nome = nome.split()
     nome = lista_nome[0]
     parte_nome = nome[:2].lower()
+
     # Pega a primeira letra do sobrenome
     sobrenome = lista_nome[1]
     parte_sobrenome = sobrenome[0].lower()
@@ -101,6 +104,5 @@ def gerar_chave(nome: str) -> str:
     chave = parte_nome + parte_sobrenome + numeros
     return chave
 
-
-#Exemplo de uso
-#print(gerar_chave("Carlos Silva"))  # Saída: cas1234 (os números mudam a cada execução)
+def limpar_menu():
+    os.system('cls' if os.name == 'nt' else 'clear')

@@ -5,5 +5,5 @@ def get_conexao():
         host="localhost",
         database="sist_votacao",
         user="root",
-        password="772654@Gabriel"
+        password="Brocolis#12"
     )
