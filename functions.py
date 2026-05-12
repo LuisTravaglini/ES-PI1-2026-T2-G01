@@ -1,3 +1,5 @@
+import random
+
 #Validação do CPF
 def validar_cpf(cpf: str) -> bool:
     #Junta os digitos sem deixar espaços
@@ -55,6 +57,8 @@ def validar_titulo(titulo: str) -> bool:
     return digito1 == int(numeros[8]) and digito2 == int(numeros[9])
 
 
+
+
 #validação da opção escolhida pelo usuario.
 def ler_opcao(opcao_valida):
 
@@ -77,3 +81,26 @@ def ler_opcao(opcao_valida):
         
         except ValueError:
             print("Digite apenas números.")
+
+
+
+#função de gerar chave de acessoo
+def gerar_chave(nome: str) -> str:
+    # Pega as duas primeiras letras do nome
+    lista_nome = nome.split()
+    nome = lista_nome[0]
+    parte_nome = nome[:2].lower()
+    # Pega a primeira letra do sobrenome
+    sobrenome = lista_nome[1]
+    parte_sobrenome = sobrenome[0].lower()
+
+    # Gera 4 números aleatórios
+    numeros = ''.join(str(random.randint(0, 9)) for _ in range(4))
+    
+    # Monta a chave final
+    chave = parte_nome + parte_sobrenome + numeros
+    return chave
+
+
+#Exemplo de uso
+print(gerar_chave("Carlos Silva"))  # Saída: cas1234 (os números mudam a cada execução)

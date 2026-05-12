@@ -116,7 +116,8 @@ while opcao == 0:
 
                         if functions.validar_titulo(titulo):
                             nome = input("Digite o nome do eleitor: ")
-                            chave_Acesso = input("Digite a chave de acesso: ")
+                            chave_Acesso = functions.gerar_chave(nome)
+                            print(chave_Acesso)
                             tipo_Mesario = bool(input("Mesário: "))
                         else:
                             print("Título Inválido")
