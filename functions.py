@@ -103,4 +103,4 @@ def gerar_chave(nome: str) -> str:
 
 
 #Exemplo de uso
-print(gerar_chave("Carlos Silva"))  # Saída: cas1234 (os números mudam a cada execução)
+#print(gerar_chave("Carlos Silva"))  # Saída: cas1234 (os números mudam a cada execução)
