@@ -22,6 +22,7 @@ while opcao == 0:
 
     while opcao == 1:
         #Menu gerenciamento
+        function.limpar_menu()
         print("=== OPÇÕES DE GERENCIAMENTO ===")
         print("1 - Candidato.")
         print("2 - Eleitor")
@@ -117,7 +118,7 @@ while opcao == 0:
                         if functions.validar_titulo(titulo):
                             nome = input("Digite o nome do eleitor: ")
                             chave_Acesso = functions.gerar_chave(nome)
-                            print(chave_Acesso)
+                            print(f"Sua chave de acesso é: {chave_Acesso}")
                             tipo_Mesario = bool(input("Mesário: "))
                         else:
                             print("Título Inválido")
