@@ -18,7 +18,7 @@ while opcao == 0:
     print("1 - Gerenciamento")
     print("2 - Votação")
 
-    opcao = int(input("Selecione uma opção: "))
+    opcao = functions.ler_opcao([1, 2])
 
     while opcao == 1:
         #Menu gerenciamento
@@ -29,7 +29,7 @@ while opcao == 0:
         print("3 - Voltar")
         
         
-        gerenciamento = functions.ler_opcao(opcao_valida)
+        gerenciamento = functions.ler_opcao([1, 2, 3])
         if gerenciamento == 3:
             opcao = 0
             
@@ -39,8 +39,7 @@ while opcao == 0:
             print("1 - Listar Candidato")
             print("2 - voltar") 
 
-            opcao_valida = [1, 2, 3]
-            opc_candidato = functions.ler_opcao(opcao_valida)
+            opc_candidato = functions.ler_opcao([1, 2])
             match opc_candidato:
                 case 1:
                     pass
@@ -56,8 +55,8 @@ while opcao == 0:
             print("2 - Cadastro(Novo eleitor)")
             print("3 - voltar")
             
-            opcao_valida = [1, 2, 3]
-            eleitor = functions.ler_opcao(opcao_valida)
+            
+            eleitor = functions.ler_opcao([1, 2, 3])
 
             match eleitor:
                 case 1:
@@ -65,7 +64,8 @@ while opcao == 0:
                     print("1 - listar Eleitores")
                     print("2 - Buscar Eleitor por CPF ou Titulo")
 
-                    lista_e = int(input("Selecione uma opção: "))
+                    lista_e = functions.ler_opcao([1, 2])
+                    
                     match lista_e:
                         case 1:
                             #Listar
@@ -78,8 +78,7 @@ while opcao == 0:
                             print("1- Buscar por CPF")
                             print("2- Buscar por Título")
                             
-                            opcao_valida = [1, 2]
-                            busca = function.ler_opcao(opcao_valida)
+                            busca = function.ler_opcao([1, 2])
                             match busca:
 
                                 case 1:
@@ -144,13 +143,13 @@ while opcao == 0:
         #Menu Votação
 
         votacao_aberta = False
-        auditoria = []
 
         print("=== OPÇÕES DE VOTAÇÃO ===")
         print("1 - Sistema de votação")
         print("2 - Voltar")
 
-        votacao = int(input("Selecione uma opção: "))
+        votacao = functions.ler_opcao([1, 2])
+        
 
         while votacao == 1:
             #Sistema de votação
@@ -160,17 +159,20 @@ while opcao == 0:
             print ("4 - Resultado")
             print ("5 - voltar")
 
-            sist_votacao = int(input("Selecione uma opção: "))
-
+            sist_votacao = functions.ler_opcao([1, 2, 3, 4, 5])
+            
             match sist_votacao:
                 case 1:
                     if votacao_aberta:
-                        ocorrencia = print("⚠️ Tentativa de abrir votação já aberta")
-                        auditoria.append(ocorrencia)
+                        with open ("auditoria.txt", "a", encoding="utf-8") as arquivo:
+                            conteudo = arquivo.write(" ⚠️ Tentativa de abrir votação já aberta")
                     else:
-                        ocorrencia = print (" ✅ Votação ABERTA! Votos podem ser registrados")
-                        auditoria.append(ocorrencia)
+                        with open ("auditoria.txt", "a", encoding="utf-8") as arquivo:
+                            conteudo = arquivo.write(" ✅ Votação ABERTA! Votos podem ser registrados")
+                        
+                    
                         titulo = input("Digite seu título: ")
+                        cpf_4 = input("Digite os 4 primeiros dígitos do seu cpf: ")
                         chave = input("Digite sua chave de acesso: ")
 
                         # procura eleitor
@@ -199,7 +201,7 @@ while opcao == 0:
                             WHERE id_eleitor = %s
                             """
 
-                            cursor.execute(query, (id_eleitor,))
+                            cursor.execute(query, (id_eleitor))
 
                             ja_votou = cursor.fetchone()
 
@@ -217,7 +219,7 @@ while opcao == 0:
                                 WHERE numero_Candidato = %s
                                 """
 
-                                cursor.execute(query, (numero,))
+                                cursor.execute(query, (numero))
 
                                 candidato = cursor.fetchone()
 
@@ -242,36 +244,36 @@ while opcao == 0:
                                     WHERE numero_Candidato = %s
                                     """
 
-                                    cursor.execute(query, (numero,))
+                                    cursor.execute(query, (numero))
 
                                     conexao.commit()
 
                                     print("Voto computado com sucesso!")
+
+
                 case 2: 
                     if not votacao_aberta:
-                        ocorrencia = print(" ⚠️ Tentativa de encerrar votação ainda não aberta!")
-                        auditoria.append(ocorrencia)
+                        with open ("auditoria.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write(" ⚠️ Tentativa de encerrar votação ainda não aberta!")
+                        
                     else:
-                        ocorrencia = print ("🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
-                        auditoria.append(ocorrencia)
+                        with open ("auditoria.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write("🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
+                        
                 case 3:
                     if not votacao_aberta:
-                        ocorrencia = print ("Para adutitar, a votação precisa estar aberta!")
-                        auditoria.append(ocorrencia)
-                    else: 
-                        print("\n=== AUDITORIA - OCORRÊNCIAS ===")
-                        if not auditoria:
-                            print("Nenhuma ocorrência registrada.")
-                        else:
-                            for i, ocorrencia in enumerate(auditoria, start=1):
-                                print(f"{i}. {ocorrencia}")
-                            print("\n=="*30)
+                        with open ("auditoria.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write ("⚠️ Para auditar, a votação precisa estar aberta!")
+                        
                 case 4:
                     ocorrencia = print("Resultado")
-                    auditoria.append(ocorrencia)
+                    
 
                 case 5:
                     votacao = 0
                     opcao = 2
 
+        """with open ("auditoria.txt", "a", encoding="utf-8") as arquivo:
+            conteudo = arquivo.write(ocorrencia)
+            print(conteudo)"""
         
