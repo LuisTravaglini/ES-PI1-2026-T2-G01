@@ -27,35 +27,38 @@ def validar_cpf(cpf: str) -> bool:
 
 
 
-
-
 #Validar título de eleitor
 def validar_titulo(titulo: str) -> bool:
     #Junta os digitos sem deixar espaços 
     numeros = "".join(ch for ch in titulo if ch.isdigit())
-
+    print("Numeros extraidos: ", numeros)
     # Verifica se tem 12 dígitos
     if len(numeros) != 12:
+        print("Erro, n tem 12 dígitos")
         return False
 
     # Evita títulos com todos os dígitos iguais
     if numeros == numeros[0] * 12:
+        print("Erro, todos são iguais")
         return False
 
-    # Calcula dígitos verificadores
-    soma1 = 0
-    for i in range(8):
-        soma1 += int(numeros[i]) * (8 - i)
-    digito1 = (soma1 % 11) % 10
+    #primeiros 8 dígitos do título
+    seq = [int(n) for n in numeros [:8]]
+    uf = [int(n) for n in numeros [8:10]]
+    digitos_verifi = [int(n) for n in numeros [10:]]
 
-    soma2 = 0
-    for i in range(9):
-        soma2 += int(numeros[i]) * (9 - i)
-    digito2 = (soma2 % 11) % 10
+    soma1 = sum(seq[i] * (2 + i) for i in range(8))
+    resto1 = soma1 % 11
+    digito1 = 0 if resto1 in (0, 1) else 11 - resto1
 
-    # Confere se os dígitos calculados batem com os informados
-    return digito1 == int(numeros[8]) and digito2 == int(numeros[9])
+    soma2 = sum(seq[i] * (3 + i) for i in range(8)) + uf[0] * 2 + uf[1] * 1
+    resto2 = soma2 % 11
+    digito2 = 0 if resto2 in (0, 1) else 11 - resto2
 
+    print("DV calculados:", digito1, digito2)
+    print("DV informados:", digitos_verifi)
+
+    return digito1 == digitos_verifi[0] and digito2 == digitos_verifi[1]
 
 
 

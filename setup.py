@@ -107,22 +107,20 @@ while opcao == 0:
                         print("CPF inválido! Insira novamente um CPF válido para dar continuidade.")
                         cpf = input("Digite o CPF do eleitor: ")
 
-                    titulo = input("Digite o título: ")
-
+                
                     #Chama a função que valida titulo
+                   
+                    titulo = input("Digite o título: ")
+            
                     while not functions.validar_titulo(titulo):
                         print("Titulo INVÁLIDO! Insira novamente um TÍTULO válido para dar continuidade.")
                         titulo = input("Digite o título: ")
 
-                        if functions.validar_titulo(titulo):
-                            nome = input("Digite o nome do eleitor: ")
-                            chave_Acesso = functions.gerar_chave(nome)
-                            print(f"Sua chave de acesso é: {chave_Acesso}")
-                            tipo_Mesario = bool(input("Mesário: "))
-                        else:
-                            print("Título Inválido")
-                    else:
-                        print("CPF inválido.")
+
+                    nome = input("Digite o nome do eleitor: ")
+                    chave_Acesso = functions.gerar_chave(nome)
+                    print(chave_Acesso)
+
 
                     #Envia os inputs para o BD
                     try:
