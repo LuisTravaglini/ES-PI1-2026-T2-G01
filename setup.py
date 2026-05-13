@@ -23,7 +23,7 @@ while opcao == 0:
 
     while opcao == 1:
         #Menu gerenciamento
-        functions.limpar_menu()
+        #functions.limpar_menu()
         print("=== OPÇÕES DE GERENCIAMENTO ===")
         print("1 - Candidato.")
         print("2 - Eleitor")
@@ -36,7 +36,7 @@ while opcao == 0:
             
         while gerenciamento == 1:
             #menu candidato
-            functions.limpar_menu()
+            #functions.limpar_menu()
             print("=== OPÇÕES DO CANDIDATO ===")
             print("1 - Listar Candidato")
             print("2 - voltar") 
@@ -53,7 +53,7 @@ while opcao == 0:
 
         while gerenciamento == 2:
             #menu eleitor
-            functions.limpar_menu()
+            #functions.limpar_menu()
             print("=== OPÇÕES DO ELEITOR ===")
             print("1 - Lista de eleitores")
             print("2 - Cadastro(Novo eleitor)")
@@ -63,7 +63,7 @@ while opcao == 0:
 
             match eleitor:
                 case 1:
-                    functions.limpar_menu()
+                    #functions.limpar_menu()
                     #menu lista de eleitores
                     print("1 - listar Eleitores")
                     print("2 - Buscar Eleitor por CPF ou Titulo")
@@ -72,14 +72,14 @@ while opcao == 0:
                     match lista_e:
                         case 1:
                             #Listar
-                            functions.limpar_menu()
+                            #functions.limpar_menu()
                             cursor.execute("SELECT nome_Completo FROM Eleitor")
                             for i in cursor.fetchall():
                                 print(i[0])
 
                         case 2:
                             #Buscar
-                            functions.limpar_menu()
+                            #functions.limpar_menu()
                             print("1- Buscar por CPF")
                             print("2- Buscar por Título")
                             
@@ -87,7 +87,7 @@ while opcao == 0:
                             match busca:
 
                                 case 1:
-                                    functions.limpar_menu()
+                                    #functions.limpar_menu()
                                     query = "SELECT nome_Completo FROM Eleitor WHERE CPF = %s"
                                     CPF_input = input("Digite o CPF: ")
                                     cursor.execute(query,(CPF_input,))
@@ -95,7 +95,7 @@ while opcao == 0:
                                         print(i[0])
 
                                 case 2: 
-                                    functions.limpar_menu()
+                                   #functions.limpar_menu()
                                     query = "SELECT nome_Completo FROM Eleitor WHERE titulo = %s"
                                     titulo_input = input("Digite o título de eleitor: ")
                                     cursor.execute(query,(titulo_input,))
@@ -103,7 +103,7 @@ while opcao == 0:
                                         print(i[0])
             
                 case 2:
-                    functions.limpar_menu()
+                    #functions.limpar_menu()
                     #menu Cadastro(eleitor)
                     
                     print("=== Cadastro De Eleitor ===")
@@ -111,7 +111,7 @@ while opcao == 0:
 
                     #Chama a função que valida CPF
                     while not functions.validar_cpf(cpf):
-                        functions.limpar_menu()
+                        #functions.limpar_menu()
                         print("CPF inválido! Insira novamente um CPF válido para dar continuidade.")
                         cpf = input("Digite o CPF do eleitor: ")
 
@@ -159,7 +159,7 @@ while opcao == 0:
         
         #Menu Votação
 
-        functions.limpar_menu()
+        #functions.limpar_menu()
 
         votacao_aberta = False
 
@@ -172,7 +172,7 @@ while opcao == 0:
         while votacao == 1:
            
             #Sistema de votação
-            functions.limpar_menu()
+            #functions.limpar_menu()
             print ("1 - Abertura Votação") 
             print ("2 - Encerramento Votação ")
             print ("3 - Auditoria")
@@ -210,14 +210,10 @@ while opcao == 0:
 
                         if result:
                             tipo_mesario = result[0]          # primeira coluna (tipo_mesario)
-                            primeiros_digitos = result[1]     # segunda coluna (LEFT(CPF,4))
-
-                            if tipo_mesario == 1:
-                                print("É mesário do tipo 1")
-                            else:
-                                print("Outro tipo de mesário")
-                        else:
                             print("Nenhum registro encontrado")
+                        else: 
+                            print("É mesário")
+                            
 
 
                         '''else:
@@ -294,7 +290,7 @@ while opcao == 0:
                             ocorrencia = arquivo.write ("Para adutitar, a votação precisa estar aberta!")
                         
                 case 4:
-                    functions.limpar_menu()
+                    #functions.limpar_menu()
                     ocorrencia = print("Resultado")
 
                 case 5:
