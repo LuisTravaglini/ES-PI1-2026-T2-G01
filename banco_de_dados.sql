@@ -16,15 +16,13 @@ CPF VARCHAR(11) unique not null,
 nome_Completo varchar(100) not null,
 titulo varchar(15) unique not null,
 chave_Acesso VARCHAR(20) unique not null,
-tipo_mesario boolean not null
+tipo_mesario boolean not null,
+votou boolean not null
 );
 
 CREATE TABLE registro_Voto(
     id INT PRIMARY KEY AUTO_INCREMENT,
     numero_Candidato INT NOT NULL,
-    id_eleitor INT NOT NULL,
-    FOREIGN KEY (id_eleitor)
-        REFERENCES Eleitor(id_eleitor),
     FOREIGN KEY (numero_Candidato)
         REFERENCES Candidato(numero_Candidato),
     data_voto TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
