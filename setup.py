@@ -173,7 +173,7 @@ while opcao == 0:
         print("1 - Sistema de votação")
         print("2 - Voltar")
 
-        votacao = int(input("Selecione uma opção: "))
+        votacao = functions.ler_opcao([1,2])
 
         while votacao == 1:
            
