@@ -25,9 +25,16 @@ def validar_cpf(cpf: str) -> bool:
     digito2 = (soma * 10 % 11) % 10
     return digito1 == int(numeros[9]) and digito2 == int(numeros[10])
 
+
+
+
+
 def validar_titulo(titulo: str) -> bool:
     numeros = "".join(ch for ch in titulo if ch.isdigit())
     return len(numeros) == 12 and numeros != numeros[0] * 12
+
+
+
 
 
 #validação da opção escolhida pelo usuario.

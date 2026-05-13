@@ -295,5 +295,8 @@ while opcao == 0:
                 case 5:
                     votacao = 0
                     opcao = 2
+        opcao = 0
+        votacao = 0
+    
 
         
