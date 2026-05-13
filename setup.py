@@ -168,7 +168,6 @@ while opcao == 0:
         functions.limpar_menu()
 
         votacao_aberta = False
-        auditoria = []
 
         print("=== OPÇÕES DE VOTAÇÃO ===")
         print("1 - Sistema de votação")
@@ -191,11 +190,13 @@ while opcao == 0:
             match sist_votacao:
                 case 1:
                     if votacao_aberta:
-                        ocorrencia = print("⚠️ Tentativa de abrir votação já aberta")
-                        auditoria.append(ocorrencia)
+                        with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write ("⚠️ Tentativa de abrir votação já aberta")
+                        
                     else:
-                        ocorrencia = print (" ✅ Votação ABERTA! Votos podem ser registrados")
-                        auditoria.append(ocorrencia)
+                        with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write (" ✅ Votação ABERTA! Votos podem ser registrados")
+                        
                         titulo = input("Digite seu título: ")
                         chave = input("Digite sua chave de acesso: ")
 
@@ -275,27 +276,21 @@ while opcao == 0:
                                     print("Voto computado com sucesso!")
                 case 2: 
                     if not votacao_aberta:
-                        ocorrencia = print(" ⚠️ Tentativa de encerrar votação ainda não aberta!")
-                        auditoria.append(ocorrencia)
+                        with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write (" ⚠️ Tentativa de encerrar votação ainda não aberta!")
+                        
                     else:
-                        ocorrencia = print ("🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
-                        auditoria.append(ocorrencia)
+                        with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write ("🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
+                        
                 case 3:
                     if not votacao_aberta:
-                        ocorrencia = print ("Para adutitar, a votação precisa estar aberta!")
-                        auditoria.append(ocorrencia)
-                    else: 
-                        print("\n=== AUDITORIA - OCORRÊNCIAS ===")
-                        if not auditoria:
-                            print("Nenhuma ocorrência registrada.")
-                        else:
-                            for i, ocorrencia in enumerate(auditoria, start=1):
-                                print(f"{i}. {ocorrencia}")
-                            print("\n=="*30)
+                        with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
+                            ocorrencia = arquivo.write ("Para adutitar, a votação precisa estar aberta!")
+                        
                 case 4:
                     functions.limpar_menu()
                     ocorrencia = print("Resultado")
-                    auditoria.append(ocorrencia)
 
                 case 5:
                     votacao = 0
