@@ -14,7 +14,7 @@ else:
 
 opcao = 0
 while opcao == 0: 
-    functions.limpar_menu()
+    #functions.limpar_menu()
     print("\n=== URNA ELETRÔNICA ===")
     print("1 - Gerenciamento")
     print("2 - Votação")
@@ -123,7 +123,7 @@ while opcao == 0:
                     # Enquanto o título não for válido, pede novamente
             
                     while not functions.validar_titulo(titulo):
-                        functions.limpar_menu()
+                        #functions.limpar_menu()
                         print("Título INVÁLIDO! Insira novamente um TÍTULO válido para dar continuidade.")
                         titulo = input("Digite o título: ")
 
@@ -136,13 +136,7 @@ while opcao == 0:
                     resp = input("Mesário (s/n): ").strip().lower()
                     tipo_Mesario = resp == "s"
 
-                    # Envia os inputs para o BD
-
-                    nome = input("Digite o nome do eleitor: ")
-                    chave_Acesso = functions.gerar_chave(nome)
-                    print(chave_Acesso)
-
-
+                    
                     #Envia os inputs para o BD
                     try:
                         cursor.execute(
@@ -155,7 +149,7 @@ while opcao == 0:
                         print("Erro ao cadastrar:", erro)
 
                 case 3:
-                    functions.limpar_menu()
+                    #functions.limpar_menu()
                     #Voltar para menu eleitor
                     gerenciamento = 0
                     opcao = 1
@@ -197,25 +191,36 @@ while opcao == 0:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
                             ocorrencia = arquivo.write (" ✅ Votação ABERTA! Votos podem ser registrados")
                         
+                        cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                         titulo = input("Digite seu título: ")
                         chave = input("Digite sua chave de acesso: ")
 
-                        # procura eleitor
                         query = """
-                        SELECT id_eleitor
-                        FROM Eleitor
-                        WHERE titulo = %s
-                        AND chave_Acesso = %s
-                        """
+                                SELECT tipo_mesario,
+                                    LEFT(CPF,4) AS primeiros_digitos
+                                FROM eleitor
+                                WHERE titulo = %s
+                                AND CPF = %s
+                                AND chave_Acesso = %s;"""
+                                                
+                        chave_Acesso = ""
+                        cursor.execute(query, (titulo, cpf, chave_Acesso))
 
-                        cursor.execute(query, (titulo, chave))
+                        result = cursor.fetchone()  # pega uma linha do resultado
 
-                        eleitor = cursor.fetchone()
+                        if result:
+                            tipo_mesario = result[0]          # primeira coluna (tipo_mesario)
+                            primeiros_digitos = result[1]     # segunda coluna (LEFT(CPF,4))
 
-                        if eleitor is None:
-                            print("Dados inválidos!")
-
+                            if tipo_mesario == 1:
+                                print("É mesário do tipo 1")
+                            else:
+                                print("Outro tipo de mesário")
                         else:
+                            print("Nenhum registro encontrado")
+
+
+                        '''else:
 
                             id_eleitor = eleitor[0]
 
@@ -273,7 +278,7 @@ while opcao == 0:
 
                                     conexao.commit()
 
-                                    print("Voto computado com sucesso!")
+                                    print("Voto computado com sucesso!")'''
                 case 2: 
                     if not votacao_aberta:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:

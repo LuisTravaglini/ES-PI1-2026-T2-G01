@@ -81,5 +81,5 @@ def gerar_chave(nome: str) -> str:
     chave = parte_nome + parte_sobrenome + numeros
     return chave
 
-def limpar_menu():
+def limpar_bumbum():
     os.system('cls' if os.name == 'nt' else 'clear')
