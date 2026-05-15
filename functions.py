@@ -27,13 +27,23 @@ def validar_cpf(cpf: str) -> bool:
 
 
 
+def val_cpf_parcial(cursor, cpf_parcial):
+
+    query = """
+    SELECT nome_Completo, CPF
+    FROM eleitor
+    WHERE CPF LIKE %s
+    """
+
+    cursor.execute(query, (cpf_parcial + "%",))
+
+    return cursor.fetchall()
 
 
+#validação do titulo do usuario.
 def validar_titulo(titulo: str) -> bool:
     numeros = "".join(ch for ch in titulo if ch.isdigit())
     return len(numeros) == 12 and numeros != numeros[0] * 12
-
-
 
 
 
@@ -92,19 +102,21 @@ def zerar_votos(conn):
 
 def mostrar_candidatos(conn):
     cursor = conn.cursor()
+
     cursor.execute("""
-                   
     SELECT candidato.id_candidato,
-    candidato.nome_Completo,
-    candidato.numero_Candidato,
-    COUNT(registro_voto.id) AS total_votos
-    FROM candidato 
-    LEFT JOIN registro_voto 
-    ON candidato.numero_Candidato = registro_voto.numero_Candidato
-    GROUP BY candidato.id_candidato, candidato.nome_Completo, candidato.registro_voto;          
-                     
+           candidato.nome_Completo,
+           candidato.numero_Candidato,
+           COUNT(registro_voto.id) AS total_votos
+    FROM candidato
+    LEFT JOIN registro_voto
+        ON candidato.numero_Candidato = registro_voto.numero_Candidato
+    GROUP BY candidato.id_candidato,
+             candidato.nome_Completo,
+             candidato.numero_Candidato;
     """)
 
-    candidato = cursor.fetchall()
-    for i in candidato:
-        print(f"Candidato: {i[1]} (Nº {i[2]} | Votos: {i[3]}")
+    candidatos = cursor.fetchall()
+
+    for i in candidatos:
+        print(f"Candidato: {i[1]} (Nº {i[2]}) | Votos: {i[3]}")

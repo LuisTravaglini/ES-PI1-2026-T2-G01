@@ -14,7 +14,7 @@ else:
 
 opcao = 0
 while opcao == 0: 
-    #functions.limpar_menu()
+    functions.limpar_menu()
     print("\n=== URNA ELETRÔNICA ===")
     print("1 - Gerenciamento")
     print("2 - Votação")
@@ -23,7 +23,7 @@ while opcao == 0:
 
     while opcao == 1:
         #Menu gerenciamento
-        #functions.limpar_menu()
+        functions.limpar_menu()
         print("=== OPÇÕES DE GERENCIAMENTO ===")
         print("1 - Candidato.")
         print("2 - Eleitor")
@@ -36,7 +36,7 @@ while opcao == 0:
             
         while gerenciamento == 1:
             #menu candidato
-            #functions.limpar_menu()
+            functions.limpar_menu()
             print("=== OPÇÕES DO CANDIDATO ===")
             print("1 - Listar Candidato")
             print("2 - voltar") 
@@ -53,7 +53,7 @@ while opcao == 0:
 
         while gerenciamento == 2:
             #menu eleitor
-            #functions.limpar_menu()
+            functions.limpar_menu()
             print("=== OPÇÕES DO ELEITOR ===")
             print("1 - Lista de eleitores")
             print("2 - Cadastro(Novo eleitor)")
@@ -63,7 +63,7 @@ while opcao == 0:
 
             match eleitor:
                 case 1:
-                    #functions.limpar_menu()
+                    functions.limpar_menu()
                     #menu lista de eleitores
                     print("1 - listar Eleitores")
                     print("2 - Buscar Eleitor por CPF ou Titulo")
@@ -72,14 +72,14 @@ while opcao == 0:
                     match lista_e:
                         case 1:
                             #Listar
-                            #functions.limpar_menu()
+                            functions.limpar_menu()
                             cursor.execute("SELECT nome_Completo FROM Eleitor")
                             for i in cursor.fetchall():
                                 print(i[0])
 
                         case 2:
                             #Buscar
-                            #functions.limpar_menu()
+                            functions.limpar_menu()
                             print("1- Buscar por CPF")
                             print("2- Buscar por Título")
                             
@@ -87,7 +87,7 @@ while opcao == 0:
                             match busca:
 
                                 case 1:
-                                    #functions.limpar_menu()
+                                    functions.limpar_menu()
                                     query = "SELECT nome_Completo FROM Eleitor WHERE CPF = %s"
                                     CPF_input = input("Digite o CPF: ")
                                     cursor.execute(query,(CPF_input,))
@@ -95,7 +95,7 @@ while opcao == 0:
                                         print(i[0])
 
                                 case 2: 
-                                   #functions.limpar_menu()
+                                    functions.limpar_menu()
                                     query = "SELECT nome_Completo FROM Eleitor WHERE titulo = %s"
                                     titulo_input = input("Digite o título de eleitor: ")
                                     cursor.execute(query,(titulo_input,))
@@ -103,7 +103,7 @@ while opcao == 0:
                                         print(i[0])
             
                 case 2:
-                    #functions.limpar_menu()
+                    functions.limpar_menu()
                     #menu Cadastro(eleitor)
                     
                     print("=== Cadastro De Eleitor ===")
@@ -111,10 +111,9 @@ while opcao == 0:
 
                     #Chama a função que valida CPF
                     while not functions.validar_cpf(cpf):
-                        #functions.limpar_menu()
+                        functions.limpar_menu()
                         print("CPF inválido! Insira novamente um CPF válido para dar continuidade.")
                         cpf = input("Digite o CPF do eleitor: ")
-
                 
                     #Chama a função que valida titulo
                    
@@ -123,7 +122,7 @@ while opcao == 0:
                     # Enquanto o título não for válido, pede novamente
             
                     while not functions.validar_titulo(titulo):
-                        #functions.limpar_menu()
+                        functions.limpar_menu()
                         print("Título INVÁLIDO! Insira novamente um TÍTULO válido para dar continuidade.")
                         titulo = input("Digite o título: ")
 
@@ -149,7 +148,7 @@ while opcao == 0:
                         print("Erro ao cadastrar:", erro)
 
                 case 3:
-                    #functions.limpar_menu()
+                    functions.limpar_menu()
                     #Voltar para menu eleitor
                     gerenciamento = 0
                     opcao = 1
@@ -159,7 +158,7 @@ while opcao == 0:
         
         #Menu Votação
 
-        #functions.limpar_menu()
+        functions.limpar_menu()
 
         votacao_aberta = False
 
@@ -190,98 +189,99 @@ while opcao == 0:
                     else:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
                             ocorrencia = arquivo.write ("\n\t ✅ Votação ABERTA! Votos podem ser registrados")
-                        
-                        cpf = input("Digite os 4 primeiros dígitos do CPF: ")
-                        titulo = input("Digite seu título: ")
-                        chave = input("Digite sua chave de acesso: ")
+                    
+                    titulo = input("Digite seu titulo: ")
+                    cpf = input("Digite os 4 primeiros dígitos do CPF: ")
+                    chave = input("Digite sua chave de acesso: ")
 
+                    query = """
+                    SELECT tipo_mesario,
+                        LEFT(CPF,4) AS primeiros_digitos
+                    FROM eleitor
+                    WHERE titulo = %s
+                    AND LEFT(CPF,4) = %s
+                    AND chave_Acesso = %s;
+                    """
+
+                    chave_Acesso = ""
+                    cursor.execute(query, (titulo, cpf, chave_Acesso))
+
+                    result = cursor.fetchone()  # pega uma linha do resultado
+
+                    if result:
+                        tipo_mesario = result[0]          # primeira coluna (tipo_mesario)
+                        print("É mesario!")
+                    else: 
+                        print("Não possui permissão")
+                        
+                    conn = get_conexao()
+                    functions.zerar_votos(conn)
+
+                    print("\n=== Zerézima ===\n")
+                    conn = get_conexao()
+                    functions.mostrar_candidatos(conn)
+
+                    conn.close()
+                    
+                    '''else:
+
+                        id_eleitor = eleitor[0]
+
+                        # verifica se já votou
                         query = """
-                                SELECT tipo_mesario,
-                                    LEFT(CPF,4) AS primeiros_digitos
-                                FROM eleitor
-                                WHERE titulo = %s
-                                AND CPF = %s
-                                AND chave_Acesso = %s;"""
-                                                
-                        chave_Acesso = ""
-                        cursor.execute(query, (titulo, cpf, chave_Acesso))
+                        SELECT *
+                        FROM registro_Voto
+                        WHERE id_eleitor = %s
+                        """
 
-                        result = cursor.fetchone()  # pega uma linha do resultado
+                        cursor.execute(query, (id_eleitor,))
 
-                        if result:
-                            tipo_mesario = result[0]          # primeira coluna (tipo_mesario)
-                            print("Não possui permissão!")
-                        else: 
-                            print("É mesário")
-                            
-                        conn = get_conexao()
-                        functions.zerar_votos(conn)
+                        ja_votou = cursor.fetchone()
 
-                        print("=== Zerézima ===")
-                        conn = get_conexao()
-                        functions.mostrar_candidatos(conn)
+                        if ja_votou:
+                            print("Esse eleitor já votou!")
 
-                        conn.close()
-                        
-                        '''else:
+                        else:
 
-                            id_eleitor = eleitor[0]
+                            numero = int(input("Digite o número do candidato: "))
 
-                            # verifica se já votou
+                            # verifica se candidato existe
                             query = """
                             SELECT *
-                            FROM registro_Voto
-                            WHERE id_eleitor = %s
+                            FROM candidato
+                            WHERE numero_Candidato = %s
                             """
 
-                            cursor.execute(query, (id_eleitor,))
+                            cursor.execute(query, (numero,))
 
-                            ja_votou = cursor.fetchone()
+                            candidato = cursor.fetchone()
 
-                            if ja_votou:
-                                print("Esse eleitor já votou!")
+                            if candidato is None:
+                                print("Candidato não encontrado!")
 
                             else:
 
-                                numero = int(input("Digite o número do candidato: "))
-
-                                # verifica se candidato existe
+                                # REGISTRA O VOTO
                                 query = """
-                                SELECT *
-                                FROM candidato
+                                INSERT INTO registro_Voto
+                                (numero_Candidato, id_eleitor)
+                                VALUES (%s, %s)
+                                """
+
+                                cursor.execute(query, (numero, id_eleitor))
+
+                                # SOMA +1 NO TOTAL DE VOTOS
+                                query = """
+                                UPDATE candidato
+                                SET votos = votos + 1
                                 WHERE numero_Candidato = %s
                                 """
 
                                 cursor.execute(query, (numero,))
 
-                                candidato = cursor.fetchone()
+                                conexao.commit()
 
-                                if candidato is None:
-                                    print("Candidato não encontrado!")
-
-                                else:
-
-                                    # REGISTRA O VOTO
-                                    query = """
-                                    INSERT INTO registro_Voto
-                                    (numero_Candidato, id_eleitor)
-                                    VALUES (%s, %s)
-                                    """
-
-                                    cursor.execute(query, (numero, id_eleitor))
-
-                                    # SOMA +1 NO TOTAL DE VOTOS
-                                    query = """
-                                    UPDATE candidato
-                                    SET votos = votos + 1
-                                    WHERE numero_Candidato = %s
-                                    """
-
-                                    cursor.execute(query, (numero,))
-
-                                    conexao.commit()
-
-                                    print("Voto computado com sucesso!")'''
+                                print("Voto computado com sucesso!")'''
                         
 
                 case 2: 
