@@ -83,3 +83,28 @@ def gerar_chave(nome: str) -> str:
 
 def limpar_menu():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def zerar_votos(conn):
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM registro_voto;")
+    conn.commit()
+
+def mostrar_candidatos(conn):
+    cursor = conn.cursor()
+    cursor.execute("""
+                   
+    SELECT candidato.id_candidato,
+    candidato.nome_Completo,
+    candidato.numero_Candidato,
+    COUNT(registro_voto.id) AS total_votos
+    FROM candidato 
+    LEFT JOIN registro_voto 
+    ON candidato.numero_Candidato = registro_voto.numero_Candidato
+    GROUP BY candidato.id_candidato, candidato.nome_Completo, candidato.registro_voto;          
+                     
+    """)
+
+    candidato = cursor.fetchall()
+    for i in candidato:
+        print(f"Candidato: {i[1]} (Nº {i[2]} | Votos: {i[3]}")

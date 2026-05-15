@@ -185,11 +185,11 @@ while opcao == 0:
                 case 1:
                     if votacao_aberta:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
-                            ocorrencia = arquivo.write ("⚠️ Tentativa de abrir votação já aberta")
+                            ocorrencia = arquivo.write ("\n\t ⚠️ Tentativa de abrir votação já aberta")
                         
                     else:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
-                            ocorrencia = arquivo.write (" ✅ Votação ABERTA! Votos podem ser registrados")
+                            ocorrencia = arquivo.write ("\n\t ✅ Votação ABERTA! Votos podem ser registrados")
                         
                         cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                         titulo = input("Digite seu título: ")
@@ -210,12 +210,19 @@ while opcao == 0:
 
                         if result:
                             tipo_mesario = result[0]          # primeira coluna (tipo_mesario)
-                            print("Nenhum registro encontrado")
+                            print("Não possui permissão!")
                         else: 
                             print("É mesário")
                             
+                        conn = get_conexao()
+                        functions.zerar_votos(conn)
 
+                        print("=== Zerézima ===")
+                        conn = get_conexao()
+                        functions.mostrar_candidatos(conn)
 
+                        conn.close()
+                        
                         '''else:
 
                             id_eleitor = eleitor[0]
@@ -275,19 +282,21 @@ while opcao == 0:
                                     conexao.commit()
 
                                     print("Voto computado com sucesso!")'''
+                        
+
                 case 2: 
                     if not votacao_aberta:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
-                            ocorrencia = arquivo.write (" ⚠️ Tentativa de encerrar votação ainda não aberta!")
+                            ocorrencia = arquivo.write ("\n\t ⚠️ Tentativa de encerrar votação ainda não aberta!")
                         
                     else:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
-                            ocorrencia = arquivo.write ("🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
+                            ocorrencia = arquivo.write ("\n\t 🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
                         
                 case 3:
                     if not votacao_aberta:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
-                            ocorrencia = arquivo.write ("Para adutitar, a votação precisa estar aberta!")
+                            ocorrencia = arquivo.write ("\n\t ⚠️Para adutitar, a votação precisa estar aberta!")
                         
                 case 4:
                     #functions.limpar_menu()
