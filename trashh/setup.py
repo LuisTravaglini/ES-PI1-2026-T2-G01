@@ -1,7 +1,8 @@
 #Conexão com o banco de dados e com o arquivo "functions"
 
 import functions
-from conexao import get_conexao
+from database.conexao import get_conexao
+
 
 conexao = get_conexao()
 cursor = conexao.cursor()
@@ -291,7 +292,7 @@ while opcao == 0:
                         
                     else:
                         with open ("arquivo.txt", "a", encoding="utf-8") as arquivo:
-                            ocorrencia = arquivo.write ("\n\t 🔒 A votação foi ENCERRADA! Nnehum voto a mais será aceita!")
+                            ocorrencia = arquivo.write ("\n\t 🔒 A votação foi ENCERRADA! Nenhum voto a mais será aceita!")
                         
                 case 3:
                     if not votacao_aberta:
