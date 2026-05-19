@@ -22,9 +22,11 @@ votou boolean not null
 
 CREATE TABLE registro_Voto(
     id INT PRIMARY KEY AUTO_INCREMENT,
+
     numero_Candidato INT NOT NULL,
+
     FOREIGN KEY (numero_Candidato)
         REFERENCES Candidato(numero_Candidato),
-    data_voto TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(id_eleitor)
+
+    data_voto TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

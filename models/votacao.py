@@ -13,21 +13,29 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     chave = input("Digite sua chave de acesso: ")
 
     query = """
-    SELECT tipo_mesario,
-        LEFT(CPF,4) AS primeiros_digitos
+    SELECT tipo_mesario
     FROM eleitor
     WHERE titulo = %s
     AND LEFT(CPF,4) = %s
     AND chave_Acesso = %s;
     """
-
     cursor.execute(query, (titulo, cpf, chave))
-    result = cursor.fetchall()
+    result = cursor.fetchone()
 
-    if result == 0:
-        print("Não possui permissão, tente novamente com perfil de mesário.")
+    if result:
+        tipo_mesario = result[0]
+
+        if tipo_mesario:
+            print("É mesário, iniciando votação...")
+        else:
+            print("Você não possui permissão de mesário.")
+            input("\nPressione Enter para voltar...")
+            return False
+
     else:
-        print("É mesário, iniciando votação...")
+        print("Dados inválidos.")
+        input("\nPressione Enter para voltar...")
+        return False
 
     zerar_votos(cursor, conexao)
 
@@ -75,6 +83,18 @@ def resultado(cursor):
 
 
 def zerar_votos(cursor, conexao):
+
+    # APAGA TODOS OS VOTOS
     cursor.execute("DELETE FROM registro_voto;")
+    cursor.execute("""
+                    UPDATE candidato
+                    SET votos = 0
+                    """)
+
+    # RESETA STATUS DE VOTAÇÃO DOS ELEITORES
+    cursor.execute("""
+    UPDATE eleitor
+    SET votou = FALSE
+    """)
+
     conexao.commit()
-    input("\nPressione Enter para voltar...")
