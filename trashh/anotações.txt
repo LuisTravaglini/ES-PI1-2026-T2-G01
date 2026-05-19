@@ -20,3 +20,22 @@ query = """
                             print("Mesário")
                         else:
                             print("Não é possivel acessar")
+
+
+
+print("=" * 30)
+                print("SEU VOTO PARA PRESIDENTE")
+                print("=" * 30)
+
+                input_num_candidato = int(input("Número: "))
+                cursor.execute("SELECT nome_Completo FROM candidato WHERE numero_Candidato = %s ", (input_num_candidato,))
+                nome_associado = cursor.fetchall()
+            
+
+                if nome_associado:
+                    for nome in nome_associado:
+                        print(f"Nome: {nome_associado[0][0]}")
+                else: 
+                    print("Nenhum candidato associado ao número escolhido!")
+
+                input("\nPressione Enter para voltar...")

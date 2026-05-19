@@ -93,25 +93,90 @@ while opcao == 0:
                     gerenciamento = 0
                     opcao = 1
 
-    # ── VOTAÇÃO ────────────────────────────────────────
+    # - SISTEMA DE VOTAÇÃO 
     while opcao == 2:
         limpar_menu()
         print("=== SISTEMA DE VOTAÇÃO ===")
         print("1 - Abrir votação")
-        print("2 - Encerrar votação")
-        print("3 - Auditoria")
-        print("4 - Resultado")
-        print("5 - Voltar")
+        print("2 - Auditoria")
+        print("3 - Resultado")
+        print("4 - Voltar")
 
-        opc = ler_opcao([1, 2, 3, 4, 5])
+        opc = ler_opcao([1, 2, 3, 4])
 
         match opc:
             case 1:
                 limpar_menu()
                 votacao_aberta = votacao.abrir_votacao(cursor, conexao, votacao_aberta)
+
+            # - VOTAÇÃO
+
+                while votacao_aberta:
+                    limpar_menu()
+                    print("=== VOTAÇÃO ===")
+                    print("1 - Votar")
+                    print("2 - Encerrar Votação")
+
+                    vot = ler_opcao([1, 2])
+
+                    match vot:
+                        case 1:
+
+                            titulo = input("Digite seu titulo: ")
+                            cpf = input("Digite os 4 primeiros dígitos do CPF: ")
+                            chave = input("Digite sua chave de acesso: ")
+
+                            query = """
+
+                            SELECT votou,
+                                LEFT(CPF,4) AS primeiros_digitos
+                            FROM eleitor
+                            WHERE titulo = %s
+                            AND LEFT(CPF,4) = %s
+                            AND chave_Acesso = %s;
+
+                                                """
+                            
+                            cursor.execute(query, (titulo, cpf, chave))
+                            result = cursor.fetchone()
+
+                            if result:
+                                print("Apto a votar")
+                                print("=" * 30)
+                                print("SEU VOTO PARA PRESIDENTE")
+                                print("=" * 30)
+
+                                input_num_candidato = int(input("Número: "))
+                                cursor.execute("SELECT nome_Completo FROM candidato WHERE numero_Candidato = %s ", (input_num_candidato,))
+                                nome_associado = cursor.fetchall()
+
+                                
+                                if nome_associado:
+                                    for nome in nome_associado:
+                                        print(f"Nome: {nome_associado[0][0]}")
+                                else: 
+                                    print("Nenhum candidato associado ao número escolhido!")
+
+                                input("\nPressione Enter para voltar...")
+
+                            else:
+                                print("Já tem voto registrado")
+                            
+                            vot = 0 
+                            
+
+                            
+
+
+
+
             case 2:
                 limpar_menu()
                 votacao_aberta = votacao.encerrar_votacao(votacao_aberta)
+                print("=" * 30)
+                ("Encerrando votação...")
+                print("=" * 30)
+
             case 3:
                 limpar_menu()
                 votacao.auditoria(votacao_aberta)

@@ -22,12 +22,12 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     """
 
     cursor.execute(query, (titulo, cpf, chave))
-    result = cursor.fetchone()
+    result = cursor.fetchall()
 
-    if result:
-        print("É mesário!")
+    if result == 0:
+        print("Não possui permissão, tente novamente com perfil de mesário.")
     else:
-        print("Não possui permissão")
+        print("É mesário, iniciando votação...")
 
     zerar_votos(cursor, conexao)
 

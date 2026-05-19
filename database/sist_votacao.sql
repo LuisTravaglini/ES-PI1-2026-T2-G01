@@ -6,3 +6,9 @@ VALUES
 (45, 'Nog', 'Costa Gold'),
 (14, 'Brown', 'Racionais'),
 (11, 'Djonga', 'DV Tribo');
+
+
+INSERT INTO Eleitor
+(id_eleitor, CPF, nome_Completo, titulo, chave_Acesso, tipo_mesario, votou)
+VALUES
+(1, '53852909805', 'Gabriel Souza Gonçalves', '658633800159', 'gas8212', 1, 0)
