@@ -54,18 +54,19 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
 
 def encerrar_votacao(votacao_aberta):
-<<<<<<< Updated upstream
     resp = input("Deseja realmente encerrar a votação?(sim/não): ")
 
     if resp.lower() == "sim":
 
         if not votacao_aberta:
             with open(LOG, "a", encoding="utf-8") as f:
-                f.write("\n\t ⚠️ Tentativa de encerrar votação ainda não aberta!")
+                horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                f.write(f"\n\t {horario} - ⚠️ Tentativa de encerrar votação ainda não aberta!")
             print("A votação não está aberta.")
         else:
             with open(LOG, "a", encoding="utf-8") as f:
-                f.write("\n\t 🔒 A votação foi ENCERRADA!")
+                horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                f.write(f"\n\t {horario} - 🔒 A votação foi ENCERRADA!")
             print("Votação encerrada.")
         input("\nPressione Enter para voltar...")
         return False
@@ -74,20 +75,6 @@ def encerrar_votacao(votacao_aberta):
         print("\nVocê não tem permissão para encerrar a votação.")
         
         return True
-=======
-    if not votacao_aberta:
-        with open(LOG, "a", encoding="utf-8") as f:
-            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
-            f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de encerrar votação ainda não aberta!")
-        print("A votação não está aberta.")
-    else:
-        with open(LOG, "a", encoding="utf-8") as f:
-            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
-            f.write(f"\n\t {horario} - 🔒ENCERRAMENTO: Votação finalizada com sucesso.")
-        print("Votação encerrada.")
-    input("\nPressione Enter para voltar...")
-    return False
->>>>>>> Stashed changes
     
 
 
