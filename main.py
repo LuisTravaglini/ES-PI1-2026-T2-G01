@@ -156,15 +156,17 @@ while opcao == 0:
                                     input_num_candidato = int(input("Número: "))
 
                                     cursor.execute(
-                                        "SELECT nome_Completo FROM candidato WHERE numero_Candidato = %s",
+                                        "SELECT nome_Completo, partido, numero_Candidato FROM candidato WHERE numero_Candidato = %s",
                                         (input_num_candidato,)
                                     )
 
                                     nome_associado = cursor.fetchone()
 
                                     if nome_associado:
-
+                                        print("=" * 30)
                                         print(f"Nome: {nome_associado[0]}")
+                                        print(f"Partido: {nome_associado[1]}")
+                                        print(f"Numero: {nome_associado[2]}")
 
                                         confirmar = input("Confirmar voto? (s/n): ").lower()
 
@@ -202,6 +204,7 @@ while opcao == 0:
 
                                         else:
                                             print("Voto cancelado.")
+                                            vot = 1
 
                                     else:
                                         print("❌ Nenhum candidato associado ao número escolhido!")
@@ -211,7 +214,12 @@ while opcao == 0:
                             else:
                                 print("❌ Dados inválidos.")
                                 input("\nPressione Enter para voltar...")
-                                                        
+                        case 2:
+                            limpar_menu()
+                            votacao_aberta = votacao.encerrar_votacao(votacao_aberta)
+                            print("=" * 30)
+                            ("Encerrando votação...")
+                            print("=" * 30)                           
 
             case 2:
                 limpar_menu()
