@@ -153,7 +153,7 @@ while opcao == 0:
                                     print("SEU VOTO PARA PRESIDENTE")
                                     print("=" * 30)
 
-                                    input_num_candidato = int(input("Número: "))
+                                    input_num_candidato = int(input("\nNúmero: "))
 
                                     cursor.execute(
                                         "SELECT nome_Completo, partido, numero_Candidato FROM candidato WHERE numero_Candidato = %s",
@@ -164,11 +164,11 @@ while opcao == 0:
 
                                     if nome_associado:
                                         print("=" * 30)
-                                        print(f"Nome: {nome_associado[0]}")
-                                        print(f"Partido: {nome_associado[1]}")
-                                        print(f"Numero: {nome_associado[2]}")
+                                        print(f"\nNome: {nome_associado[0]}")
+                                        print(f"\nPartido: {nome_associado[1]}")
+                                        print(f"\nNumero: {nome_associado[2]}")
 
-                                        confirmar = input("Confirmar voto? (s/n): ").lower()
+                                        confirmar = input("\nConfirmar voto? (s/n): ").lower()
 
                                         if confirmar == "s":
 
@@ -200,8 +200,8 @@ while opcao == 0:
 
                                             conexao.commit()
 
-                                            print("✅ Voto registrado com sucesso!")
-
+                                            print("\n✅ Voto registrado com sucesso!")
+                                            print("\nPROTOCOLO DE VOTAÇÃO: ", votacao.protocolo_votacao(input_num_candidato))
                                         else:
                                             print("Voto cancelado.")
                                             vot = 1

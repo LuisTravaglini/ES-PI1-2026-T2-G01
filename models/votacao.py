@@ -1,5 +1,8 @@
 LOG = "logs/auditoria.log"
 
+import random
+import string
+
 def abrir_votacao(cursor, conexao, votacao_aberta):
     if votacao_aberta:
         with open(LOG, "a", encoding="utf-8") as f:
@@ -134,3 +137,12 @@ def zerar_votos(cursor, conexao):
     """)
 
     conexao.commit()
+
+
+def protocolo_votacao(numero_candidato):
+
+    letras_aleatorias = ''.join(random.sample(string.ascii_uppercase, k=2))
+    numeros_aleatorios = ''.join(map(str, random.sample(range(1, 9), k=5)))
+    return f'V{letras_aleatorias}26{str(numero_candidato)}{numeros_aleatorios}'
+    
+    
