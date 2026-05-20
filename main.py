@@ -99,8 +99,8 @@ while opcao == 0:
         limpar_menu()
         print("=== SISTEMA DE VOTAÇÃO ===")
         print("1 - Abrir votação")
-        print("2 - Auditoria")
-        print("3 - Resultado")
+        print("2 - Auditoria da votação")
+        print("3 - Resultado da votação")
         print("4 - Voltar")
 
         opc = ler_opcao([1, 2, 3, 4])
@@ -250,8 +250,7 @@ while opcao == 0:
                                     continue
                             else:
                                 print("Dados inválidos.")
-                                input("\nPressione Enter para voltar...")        
-
+                                input("\nPressione Enter para voltar...")     
             case 2:
                 limpar_menu()
                 votacao.auditoria(votacao_aberta)

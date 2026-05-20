@@ -75,12 +75,12 @@ def encerrar_votacao(votacao_aberta, cursor):
                 print("Encerrando votação...")
                 print("=" * 30) 
                 with open(LOG, "a", encoding="utf-8") as f:
-                    f.write("\n\t 🔒 A votação foi ENCERRADA!")
+                    horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                    f.write(f"\n\t {horario} -🔒 A votação foi ENCERRADA!")
                 print("Votação encerrada.")  
             else:
                 print("Chave de acesso inválida.")
-
-        input("\nPressione Enter para voltar...")
+                input("\nPressione Enter para voltar...")
         return True
 
     else:
@@ -98,6 +98,10 @@ def auditoria(votacao_aberta):
         print("A votação precisa estar aberta para auditar.")
     input("\nPressione Enter para voltar...")
 
+
+
+def ordem_alfabetica(candidato):
+    return candidato[0].lower()
 
 
 def resultado(cursor):
@@ -139,8 +143,11 @@ def resultado(cursor):
 
         print("\n📊 TODOS OS RESULTADOS\n")
 
-        for candidato in candidatos:
+        def ordem_alfabetica(candidato):
+            return candidato[0].lower() 
 
+        for candidato in range(len(candidatos, key=ordem_alfabetica)):
+            
             print("=" * 30)
             print(f"Nome: {candidato[0]}")
             print(f"Número: {candidato[1]}")
