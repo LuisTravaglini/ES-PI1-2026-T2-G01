@@ -48,16 +48,25 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
 
 def encerrar_votacao(votacao_aberta):
-    if not votacao_aberta:
-        with open(LOG, "a", encoding="utf-8") as f:
-            f.write("\n\t ⚠️ Tentativa de encerrar votação ainda não aberta!")
-        print("A votação não está aberta.")
+    resp = input("Deseja realmente encerrar a votação?(sim/não): ")
+
+    if resp.lower() == "sim":
+
+        if not votacao_aberta:
+            with open(LOG, "a", encoding="utf-8") as f:
+                f.write("\n\t ⚠️ Tentativa de encerrar votação ainda não aberta!")
+            print("A votação não está aberta.")
+        else:
+            with open(LOG, "a", encoding="utf-8") as f:
+                f.write("\n\t 🔒 A votação foi ENCERRADA!")
+            print("Votação encerrada.")
+        input("\nPressione Enter para voltar...")
+        return False
+
     else:
-        with open(LOG, "a", encoding="utf-8") as f:
-            f.write("\n\t 🔒 A votação foi ENCERRADA!")
-        print("Votação encerrada.")
-    input("\nPressione Enter para voltar...")
-    return False
+        print("\nVocê não tem permissão para encerrar a votação.")
+        
+        return True
     
 
 

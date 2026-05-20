@@ -216,10 +216,39 @@ while opcao == 0:
                                 input("\nPressione Enter para voltar...")
                         case 2:
                             limpar_menu()
-                            votacao_aberta = votacao.encerrar_votacao(votacao_aberta)
-                            print("=" * 30)
-                            ("Encerrando votação...")
-                            print("=" * 30)                           
+
+                            titulo = input("Digite seu titulo: ")
+                            cpf = input("Digite os 4 primeiros dígitos do CPF: ")
+                            chave = input("Digite sua chave de acesso: ")
+
+                            query = """
+                            SELECT id_eleitor, votou, tipo_mesario
+                            FROM eleitor
+                            WHERE titulo = %s
+                            AND LEFT(CPF,4) = %s
+                            AND chave_Acesso = %s;
+                            """
+
+                            cursor.execute(query, (titulo, cpf, chave))
+                            result = cursor.fetchone()
+
+                            if result:
+                                
+                                tipo_mesario = result[2]
+
+                                if tipo_mesario == 1:
+                                    votacao_aberta = votacao.encerrar_votacao(votacao_aberta)
+
+                                    if votacao_aberta:
+                                        continue
+
+                                    print("=" * 30)
+                                    ("Encerrando votação...")
+                                    print("=" * 30)  
+
+                            else:
+                                print("Dados inválidos.")
+                                input("\nPressione Enter para voltar...")        
 
             case 2:
                 limpar_menu()
