@@ -2,14 +2,17 @@ LOG = "logs/auditoria.log"
 
 import random
 import string
+from datetime import datetime
 
 def abrir_votacao(cursor, conexao, votacao_aberta):
     if votacao_aberta:
         with open(LOG, "a", encoding="utf-8") as f:
-            f.write("\n\t ⚠️ Tentativa de abrir votação já aberta")
+            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            f.write(f"\n\t ⚠️ {horario} - ALERTA: Tentativa de abrir votação já aberta")
     else:
         with open(LOG, "a", encoding="utf-8") as f:
-            f.write("\n\t ✅ Votação ABERTA! Votos podem ser registrados")
+            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            f.write(f"\n\t {horario} - ✅ ABERTURA: Votação iniciada com sucesso. Total de votos zerado")
 
     titulo = input("Digite seu titulo: ")
     cpf = input("Digite os 4 primeiros dígitos do CPF: ")
@@ -31,6 +34,9 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
         if tipo_mesario:
             print("É mesário, iniciando votação...")
         else:
+            with open(LOG, "a", encoding="utf-8") as f:
+                horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de acesso negado")
             print("Você não possui permissão de mesário.")
             input("\nPressione Enter para voltar...")
             return False
@@ -48,6 +54,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
 
 def encerrar_votacao(votacao_aberta):
+<<<<<<< Updated upstream
     resp = input("Deseja realmente encerrar a votação?(sim/não): ")
 
     if resp.lower() == "sim":
@@ -67,13 +74,28 @@ def encerrar_votacao(votacao_aberta):
         print("\nVocê não tem permissão para encerrar a votação.")
         
         return True
+=======
+    if not votacao_aberta:
+        with open(LOG, "a", encoding="utf-8") as f:
+            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de encerrar votação ainda não aberta!")
+        print("A votação não está aberta.")
+    else:
+        with open(LOG, "a", encoding="utf-8") as f:
+            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            f.write(f"\n\t {horario} - 🔒ENCERRAMENTO: Votação finalizada com sucesso.")
+        print("Votação encerrada.")
+    input("\nPressione Enter para voltar...")
+    return False
+>>>>>>> Stashed changes
     
 
 
 def auditoria(votacao_aberta):
     if not votacao_aberta:
         with open(LOG, "a", encoding="utf-8") as f:
-            f.write("\n\t ⚠️ Para auditar, a votação precisa estar aberta!")
+            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            f.write(f"\n\t {horario} - ⚠️ ALERTA: Para auditar, a votação precisa estar aberta!")
         print("A votação precisa estar aberta para auditar.")
     input("\nPressione Enter para voltar...")
 

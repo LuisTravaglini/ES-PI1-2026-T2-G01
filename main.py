@@ -3,6 +3,7 @@ from utils.ui import ler_opcao, limpar_menu
 import models.candidato as candidato
 import models.eleitor as eleitor
 import models.votacao as votacao
+from datetime import datetime
 
 conexao = get_conexao()
 cursor = conexao.cursor()
@@ -109,6 +110,7 @@ while opcao == 0:
                 limpar_menu()
                 votacao_aberta = votacao.abrir_votacao(cursor, conexao, votacao_aberta)
 
+
             # - VOTAÇÃO
 
                 while votacao_aberta:
@@ -143,6 +145,9 @@ while opcao == 0:
                                 ja_votou = result[1]
 
                                 if ja_votou:
+                                    with open('auditoria.log', "a", encoding="utf-8") as f:
+                                        horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                                        f.write("\n\t {horario} - ⚠️ ALERTA: Tentativa de voto duplo")
                                     print("❌ Você já votou nesta eleição.")
                                     input("\nPressione Enter para voltar...")
 
