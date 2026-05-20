@@ -213,24 +213,12 @@ while opcao == 0:
                                 input("\nPressione Enter para voltar...")
                                                         
 
-                            
-
-
-
-
             case 2:
                 limpar_menu()
-                votacao_aberta = votacao.encerrar_votacao(votacao_aberta)
-                print("=" * 30)
-                ("Encerrando votação...")
-                print("=" * 30)
-
+                votacao.auditoria(votacao_aberta)
             case 3:
                 limpar_menu()
-                votacao.auditoria(votacao_aberta)
-            case 4:
-                limpar_menu()
                 votacao.resultado(cursor)
-            case 5:
+            case 4:
                 opcao = 0
                 break

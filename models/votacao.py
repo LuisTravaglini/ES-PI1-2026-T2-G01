@@ -68,17 +68,53 @@ def auditoria(votacao_aberta):
 
 
 def resultado(cursor):
+
     cursor.execute("""
-    SELECT candidato.nome_Completo,
-           candidato.numero_Candidato,
-           COUNT(registro_voto.id) AS total_votos
+    SELECT nome_Completo,
+           numero_Candidato,
+           partido,
+           votos
     FROM candidato
-    LEFT JOIN registro_voto ON candidato.numero_Candidato = registro_voto.numero_Candidato
-    GROUP BY candidato.id_candidato, candidato.nome_Completo, candidato.numero_Candidato
-    ORDER BY total_votos DESC
+    ORDER BY votos DESC
     """)
-    for c in cursor.fetchall():
-        print(f"{c[0]} (Nº {c[1]}) — {c[2]} votos")
+
+    candidatos = cursor.fetchall()
+
+    if not candidatos:
+        print("Nenhum candidato encontrado.")
+        input("\nPressione Enter para voltar...")
+        return
+
+    print("=" * 40)
+    print("RESULTADO DA ELEIÇÃO")
+    print("=" * 40)
+
+    # VENCEDOR
+    vencedor = candidatos[0]
+
+    print("\n🏆 VENCEDOR DA ELEIÇÃO")
+    print(f"Nome: {vencedor[0]}")
+    print(f"Número: {vencedor[1]}")
+    print(f"Partido: {vencedor[2]}")
+    print(f"Votos: {vencedor[3]}")
+
+    print("\n" + "=" * 40)
+
+    opcao = input("Deseja ver os demais candidatos? (s/n): ").lower()
+
+    if opcao == "s":
+
+        print("\n📊 TODOS OS RESULTADOS\n")
+
+        for candidato in candidatos:
+
+            print("=" * 30)
+            print(f"Nome: {candidato[0]}")
+            print(f"Número: {candidato[1]}")
+            print(f"Partido: {candidato[2]}")
+            print(f"Total de votos: {candidato[3]}")
+            print("=" * 30)
+
     input("\nPressione Enter para voltar...")
 
 
