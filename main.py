@@ -154,65 +154,8 @@ while opcao == 0:
                                 else:
 
                                     print("Apto a votar")
-                                    print("=" * 30)
-                                    print("SEU VOTO PARA PRESIDENTE")
-                                    print("=" * 30)
 
-                                    input_num_candidato = int(input("\nNúmero: "))
-
-                                    cursor.execute(
-                                        "SELECT nome_Completo, partido, numero_Candidato FROM candidato WHERE numero_Candidato = %s",
-                                        (input_num_candidato,)
-                                    )
-
-                                    nome_associado = cursor.fetchone()
-
-                                    if nome_associado:
-                                        print("=" * 30)
-                                        print(f"\nNome: {nome_associado[0]}")
-                                        print(f"\nPartido: {nome_associado[1]}")
-                                        print(f"\nNumero: {nome_associado[2]}")
-
-                                        confirmar = input("\nConfirmar voto? (s/n): ").lower()
-
-                                        if confirmar == "s":
-
-                                            # REGISTRA O VOTO
-                                            query_voto = """
-                                            INSERT INTO registro_voto(numero_Candidato)
-                                            VALUES (%s)
-                                            """
-
-                                            cursor.execute(query_voto, (input_num_candidato,))
-
-                                            # SOMA +1 NO CANDIDATO
-                                            query_update_candidato = """
-                                            UPDATE candidato
-                                            SET votos = COALESCE(votos, 0) + 1
-                                            WHERE numero_Candidato = %s
-                                            """
-
-                                            cursor.execute(query_update_candidato, (input_num_candidato,))
-
-                                            # MARCA ELEITOR COMO JÁ VOTOU
-                                            query_update = """
-                                            UPDATE eleitor
-                                            SET votou = TRUE
-                                            WHERE id_eleitor = %s
-                                            """
-
-                                            cursor.execute(query_update, (id_eleitor,))
-
-                                            conexao.commit()
-
-                                            print("\n✅ Voto registrado com sucesso!")
-                                            print("\nPROTOCOLO DE VOTAÇÃO: ", votacao.protocolo_votacao(input_num_candidato))
-                                        else:
-                                            print("Voto cancelado.")
-                                            vot = 1
-
-                                    else:
-                                        print("❌ Nenhum candidato associado ao número escolhido!")
+                                    votacao.realizar_voto(cursor, conexao, id_eleitor)
 
                                     input("\nPressione Enter para voltar...")
 

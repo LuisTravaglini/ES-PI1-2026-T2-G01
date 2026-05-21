@@ -75,7 +75,7 @@ def encerrar_votacao(votacao_aberta, cursor):
                 print("Encerrando votação...")
                 print("=" * 30) 
                 with open(LOG, "a", encoding="utf-8") as f:
-                    horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                    horario = datetime.now().strftime('%D/%m/%Y %H:%M:%S')
                     f.write(f"\n\t {horario} -🔒 A votação foi ENCERRADA!")
                 print("Votação encerrada.")  
             else:
@@ -174,6 +174,22 @@ def zerar_votos(cursor, conexao):
     """)
 
     conexao.commit()
+    print("\n=== ZERÉSIMA ===")
+    print("Todos os candidatos iniciam com 0 votos.\n")
+
+    cursor.execute("""
+    SELECT nome_Completo, numero_Candidato, votos
+    FROM candidato
+    ORDER BY nome_Completo
+    """)
+
+    candidatos = cursor.fetchall()
+
+    for candidato in candidatos:
+        print("=" * 30)
+        print(f"Nome: {candidato[0]}")
+        print(f"Número: {candidato[1]}")
+        print(f"Votos: {candidato[2]}")
 
 
 def protocolo_votacao(numero_candidato):
@@ -182,4 +198,77 @@ def protocolo_votacao(numero_candidato):
     numeros_aleatorios = ''.join(map(str, random.sample(range(1, 9), k=5)))
     return f'V{letras_aleatorias}26{str(numero_candidato)}{numeros_aleatorios}'
     
-    
+
+
+def realizar_voto(cursor, conexao, id_eleitor):
+
+    print("=" * 30)
+    print("SEU VOTO PARA PRESIDENTE")
+    print("=" * 30)
+
+    input_num_candidato = int(input("\nNúmero: "))
+
+    cursor.execute(
+        "SELECT nome_Completo, partido, numero_Candidato FROM candidato WHERE numero_Candidato = %s",
+        (input_num_candidato,)
+    )
+
+    nome_associado = cursor.fetchone()
+
+    if nome_associado:
+
+        print("=" * 30)
+        print(f"\nNome: {nome_associado[0]}")
+        print(f"Partido: {nome_associado[1]}")
+        print(f"Número: {nome_associado[2]}")
+
+        confirmar = input("\nConfirmar voto? (s/n): ").lower()
+
+        if confirmar == "s":
+
+            protocolo = votacao.protocolo_votacao(input_num_candidato)
+
+            # REGISTRA O VOTO
+            query_voto = """
+            INSERT INTO registro_voto(numero_Candidato, protocolo)
+            VALUES (%s, %s)
+            """
+
+            cursor.execute(query_voto, (input_num_candidato, protocolo))
+
+            # SOMA +1 NO CANDIDATO
+            query_update_candidato = """
+            UPDATE candidato
+            SET votos = COALESCE(votos, 0) + 1
+            WHERE numero_Candidato = %s
+            """
+
+            cursor.execute(query_update_candidato, (input_num_candidato,))
+
+            # MARCA ELEITOR COMO JÁ VOTOU
+            query_update = """
+            UPDATE eleitor
+            SET votou = TRUE
+            WHERE id_eleitor = %s
+            """
+
+            cursor.execute(query_update, (id_eleitor,))
+
+            conexao.commit()
+
+            print("\n✅ Voto registrado com sucesso!")
+            print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
+
+        else:
+
+            print("\n⚠️ Voto não confirmado.")
+            print("Retornando para seleção do candidato...\n")
+
+            realizar_voto(cursor, conexao, id_eleitor)
+
+    else:
+
+        print("❌ Nenhum candidato associado ao número escolhido!")
+        print("Tente novamente.\n")
+
+        realizar_voto(cursor, conexao, id_eleitor)
