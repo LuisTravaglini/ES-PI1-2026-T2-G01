@@ -101,9 +101,10 @@ while opcao == 0:
         print("1 - Abrir votação")
         print("2 - Auditoria da votação")
         print("3 - Resultado da votação")
-        print("4 - Voltar")
-
-        opc = ler_opcao([1, 2, 3, 4])
+        print("4 - Estatística de Comparecimento")
+        print("5 - Validação de Integridade")
+        print("6 - Voltar")
+        opc = ler_opcao([1, 2, 3, 4, 5, 6])
 
         match opc:
             case 1:
@@ -201,5 +202,12 @@ while opcao == 0:
                 limpar_menu()
                 votacao.resultado(cursor)
             case 4:
+                limpar_menu()
+                votacao.estatistica_comparecimento(cursor)
+
+            case 5:
+                limpar_menu()
+                votacao.validacao_integridade(cursor)
+            case 6:
                 opcao = 0
                 break

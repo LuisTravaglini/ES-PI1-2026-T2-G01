@@ -155,6 +155,32 @@ def resultado(cursor):
             print(f"Total de votos: {candidato[3]}")
             print("=" * 30)
 
+        
+    opc1 = input("Deseja ver os votos por partido (s/n): ").lower()
+    if opc1 == "s":
+         # MOSTRA VOTOS POR PARTIDO
+        print("\n" + "=" * 40)
+        print("VOTOS POR PARTIDO")
+        print("=" * 40)
+
+        query_partidos = """
+            SELECT partido,
+                SUM(votos) AS total_votos
+            FROM candidato
+            GROUP BY partido
+            ORDER BY total_votos DESC
+            """
+
+        cursor.execute(query_partidos)
+
+        partidos = cursor.fetchall()
+
+        for partido in partidos:
+            print("=" * 30)
+            print(f"Partido: {partido[0]}")
+            print(f"Total de votos: {partido[1]}")
+            print("=" * 30)
+
     input("\nPressione Enter para voltar...")
 
 
@@ -272,3 +298,82 @@ def realizar_voto(cursor, conexao, id_eleitor):
         print("Tente novamente.\n")
 
         realizar_voto(cursor, conexao, id_eleitor)
+
+
+def estatistica_comparecimento(cursor):
+
+    # TOTAL DE ELEITORES
+    query_total = """
+    SELECT COUNT(*) 
+    FROM eleitor
+    """
+
+    cursor.execute(query_total)
+    total_eleitores = cursor.fetchone()[0]
+
+    # TOTAL QUE VOTOU
+    query_votaram = """
+    SELECT COUNT(*)
+    FROM eleitor
+    WHERE votou = TRUE
+    """
+
+    cursor.execute(query_votaram)
+    total_votaram = cursor.fetchone()[0]
+
+    # PORCENTAGEM
+    porcentagem = (total_votaram / total_eleitores) * 100
+
+    print("=" * 40)
+    print("ESTATÍSTICA DE COMPARECIMENTO")
+    print("=" * 40)
+
+    print(f"Total de eleitores aptos: {total_eleitores}")
+    print(f"Total de comparecimento: {total_votaram}")
+    print(f"Percentual de comparecimento: {porcentagem:.2f}%")
+
+    input("\nPressione Enter para voltar...")
+
+
+
+def validacao_integridade(cursor):
+
+    # TOTAL DE VOTOS REGISTRADOS
+    query_votos = """
+    SELECT COUNT(*)
+    FROM registro_voto
+    """
+
+    cursor.execute(query_votos)
+    total_votos = cursor.fetchone()[0]
+
+    # TOTAL DE ELEITORES QUE VOTARAM
+    query_eleitores = """
+    SELECT COUNT(*)
+    FROM eleitor
+    WHERE votou = TRUE
+    """
+
+    cursor.execute(query_eleitores)
+    total_eleitores = cursor.fetchone()[0]
+
+    print("=" * 40)
+    print("VALIDAÇÃO DE INTEGRIDADE")
+    print("=" * 40)
+
+    print(f"Votos registrados na urna: {total_votos}")
+    print(f"Eleitores com voto registrado: {total_eleitores}")
+
+    print("\n" + "=" * 40)
+
+    if total_votos == total_eleitores:
+
+        print("✅ INTEGRIDADE VALIDADA")
+        print("Nenhuma inconsistência encontrada.")
+
+    else:
+
+        print("❌ ALERTA DE INCONSISTÊNCIA")
+        print("Os totais não coincidem.")
+
+    input("\nPressione Enter para voltar...")

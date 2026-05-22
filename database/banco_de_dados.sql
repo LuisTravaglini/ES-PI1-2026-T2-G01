@@ -5,7 +5,7 @@ USE sist_votacao;
 CREATE TABLE Candidato(
 id_candidato int primary key auto_increment,
 numero_Candidato int unique not null,
-nome_Completo varchar(100) not null,
+nome_Completo varchar(100) unique not null,
 partido varchar(20) not null,
 votos int
 );
