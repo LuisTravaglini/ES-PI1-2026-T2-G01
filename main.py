@@ -186,14 +186,14 @@ while opcao == 0:
 
                                 if tipo_mesario == 1:
                                     votacao_aberta = votacao.encerrar_votacao(votacao_aberta, cursor)
-                                
-                                    if not votacao_aberta:
-                                        continue
 
-                                    continue
+                                    if not votacao_aberta:
+                                        break
+                                    
                             else:
                                 print("Dados inválidos.")
-                                input("\nPressione Enter para voltar...")     
+                                input("\nPressione Enter para voltar...")    
+                                
             case 2:
                 limpar_menu()
                 votacao.auditoria(votacao_aberta)

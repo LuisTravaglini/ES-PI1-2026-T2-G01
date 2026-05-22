@@ -77,16 +77,16 @@ def encerrar_votacao(votacao_aberta, cursor):
                 with open(LOG, "a", encoding="utf-8") as f:
                     horario = datetime.now().strftime('%D/%m/%Y %H:%M:%S')
                     f.write(f"\n\t {horario} -🔒 A votação foi ENCERRADA!")
-                print("Votação encerrada.")  
+                print("Votação encerrada.")
+                return False  
             else:
                 print("Chave de acesso inválida.")
                 input("\nPressione Enter para voltar...")
-        return True
+                return True
 
     else:
         print("\nVocê não tem permissão para encerrar a votação.")
-        
-        return False
+        return True
     
 
 
@@ -146,7 +146,7 @@ def resultado(cursor):
         def ordem_alfabetica(candidato):
             return candidato[0].lower() 
 
-        for candidato in range(len(candidatos, key=ordem_alfabetica)):
+        for candidato in sorted(candidatos, key=ordem_alfabetica):
             
             print("=" * 30)
             print(f"Nome: {candidato[0]}")
@@ -226,15 +226,15 @@ def realizar_voto(cursor, conexao, id_eleitor):
 
         if confirmar == "s":
 
-            protocolo = votacao.protocolo_votacao(input_num_candidato)
+            protocolo = protocolo_votacao(input_num_candidato)
 
             # REGISTRA O VOTO
             query_voto = """
-            INSERT INTO registro_voto(numero_Candidato, protocolo)
-            VALUES (%s, %s)
+            INSERT INTO registro_voto(numero_Candidato, nome_Completo, protocolo)
+            VALUES (%s, %s, %s)
             """
 
-            cursor.execute(query_voto, (input_num_candidato, protocolo))
+            cursor.execute(query_voto, (input_num_candidato, nome_associado[0],  protocolo))
 
             # SOMA +1 NO CANDIDATO
             query_update_candidato = """
