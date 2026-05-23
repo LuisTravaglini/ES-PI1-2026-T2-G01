@@ -7,6 +7,7 @@ e exibição de resultados da eleição.
 """
 
 LOG = "logs/auditoria.log"
+LOG_1 = "logs/protocolo.log"
 
 import random
 import string
@@ -366,6 +367,8 @@ def zerar_votos(cursor, conexao):
 
 
 def protocolo_votacao(numero_candidato):
+        
+
     """
     Gera um protocolo único para o voto registrado.
 
@@ -389,6 +392,7 @@ def protocolo_votacao(numero_candidato):
         f'26{str(numero_candidato)}'
         f'{numeros_aleatorios}'
     )
+
 
 
 def realizar_voto(cursor, conexao, id_eleitor):
@@ -442,7 +446,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
             )
 
             with open(
-                'protocolo.log',
+                LOG_1,
                 "a",
                 encoding="utf-8"
             ) as f:
@@ -450,7 +454,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
                 horario = datetime.now().strftime(
                     '%d/%m/%y %H:%M:%S'
                 )
-
+                ordem_alfabetica(protocolo)
                 f.write(
                     f"\n\t {horario} - {protocolo}"
                 )
