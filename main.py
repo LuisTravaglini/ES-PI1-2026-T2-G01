@@ -147,8 +147,8 @@ while opcao == 0:
 
                                 if ja_votou:
                                     with open('auditoria.log', "a", encoding="utf-8") as f:
-                                        horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
-                                        f.write("\n\t {horario} - ⚠️ ALERTA: Tentativa de voto duplo")
+                                        horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+                                        f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de voto duplo")
                                     print("❌ Você já votou nesta eleição.")
                                     input("\nPressione Enter para voltar...")
 

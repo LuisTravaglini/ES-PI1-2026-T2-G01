@@ -7,11 +7,11 @@ from datetime import datetime
 def abrir_votacao(cursor, conexao, votacao_aberta):
     if votacao_aberta:
         with open(LOG, "a", encoding="utf-8") as f:
-            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
             f.write(f"\n\t ⚠️ {horario} - ALERTA: Tentativa de abrir votação já aberta")
     else:
         with open(LOG, "a", encoding="utf-8") as f:
-            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
             f.write(f"\n\t {horario} - ✅ ABERTURA: Votação iniciada com sucesso. Total de votos zerado")
 
     titulo = input("Digite seu titulo: ")
@@ -35,7 +35,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
             print("É mesário, iniciando votação...")
         else:
             with open(LOG, "a", encoding="utf-8") as f:
-                horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+                horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
                 f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de acesso negado")
             print("Você não possui permissão de mesário.")
             input("\nPressione Enter para voltar...")
@@ -75,7 +75,7 @@ def encerrar_votacao(votacao_aberta, cursor):
                 print("Encerrando votação...")
                 print("=" * 30) 
                 with open(LOG, "a", encoding="utf-8") as f:
-                    horario = datetime.now().strftime('%D/%m/%Y %H:%M:%S')
+                    horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
                     f.write(f"\n\t {horario} -🔒 A votação foi ENCERRADA!")
                 print("Votação encerrada.")
                 return False  
@@ -93,7 +93,7 @@ def encerrar_votacao(votacao_aberta, cursor):
 def auditoria(votacao_aberta):
     if not votacao_aberta:
         with open(LOG, "a", encoding="utf-8") as f:
-            horario = datetime.now().strftime('%D/%M/%Y %H:%M%S')
+            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
             f.write(f"\n\t {horario} - ⚠️ ALERTA: Para auditar, a votação precisa estar aberta!")
         print("A votação precisa estar aberta para auditar.")
     input("\nPressione Enter para voltar...")
@@ -253,6 +253,9 @@ def realizar_voto(cursor, conexao, id_eleitor):
         if confirmar == "s":
 
             protocolo = protocolo_votacao(input_num_candidato)
+            with open('protocolo.log', "a", encoding="utf-8") as f:
+                horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+                f.write(f"\n\t {horario} - {protocolo}")
 
             # REGISTRA O VOTO
             query_voto = """
