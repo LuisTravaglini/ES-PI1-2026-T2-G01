@@ -4,7 +4,7 @@ Módulo responsável pelo gerenciamento de eleitores.
 Este módulo contém funções para cadastro,
 consulta e listagem de eleitores do sistema.
 """
-
+from utils.criptografia import criptografar
 from utils.validacoes import (
     validar_cpf,
     validar_titulo,
@@ -120,6 +120,7 @@ def cadastrar_eleitor(cursor, conexao):
 
         cpf = input("Digite o CPF do eleitor: ")
 
+    cpf_criptografado = criptografar(cpf)
     titulo = input("Digite o título: ")
 
     while not validar_titulo(titulo):
@@ -135,7 +136,7 @@ def cadastrar_eleitor(cursor, conexao):
     nome = input("Digite o nome do eleitor: ")
 
     chave_Acesso = gerar_chave(nome)
-
+    chave_criptografada = criptografar(chave_Acesso)
     print(f"Sua chave de acesso é: {chave_Acesso}")
 
     resp = input("Mesário (s/n): ").strip().lower()
@@ -165,10 +166,10 @@ def cadastrar_eleitor(cursor, conexao):
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
-                cpf,
+                cpf_criptografado,
                 nome,
                 titulo,
-                chave_Acesso,
+                chave_criptografada,
                 tipo_Mesario,
                 votou
             )
