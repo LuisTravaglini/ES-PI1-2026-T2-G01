@@ -219,21 +219,6 @@ def auditoria(votacao_aberta):
     input("\nPressione Enter para voltar...")
 
 
-def ordem_alfabetica(candidato):
-    """
-    Retorna o nome do candidato em letras minúsculas
-    para auxiliar na ordenação alfabética.
-
-    Args:
-        candidato (tuple): Dados do candidato.
-
-    Returns:
-        str: Nome do candidato em letras minúsculas.
-    """
-
-    return candidato[0].lower()
-
-
 def resultado(cursor):
     """
     Exibe o resultado da eleição e os votos por partido.
@@ -381,6 +366,45 @@ def zerar_votos(cursor, conexao):
         print(f"Votos: {candidato[2]}")
 
 
+
+
+def ordem_alfa_candidatos(candidato):
+    """
+    Retorna o nome do candidato em letras minúsculas
+    para auxiliar na ordenação alfabética.
+
+    Args:
+        candidato (tuple): Dados do candidato.
+
+    Returns:
+        str: Nome do candidato em letras minúsculas.
+    """
+    return candidato[0].lower()
+
+
+
+def chave_ordemalfa(linha):
+    partes = linha.strip().split("-")
+    if len(partes) >= 2:
+        return partes[-1].lower()
+    return linha.strip().lower()
+
+
+def ordem_alfa_protocolo(protocolo):
+    
+    with open(LOG_1, "a", encoding="utf-8") as f:
+        horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
+        f.write(f" {horario} - {protocolo}\n")
+
+    
+    with open(LOG_1, "r", encoding="utf-8") as f:
+        linhas = f.readlines()
+
+    
+    with open(LOG_1, "w", encoding="utf-8") as f:
+        f.writelines(sorted(linhas, key=chave_ordemalfa))
+
+
 def protocolo_votacao(numero_candidato):
         
 
@@ -460,19 +484,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
                 input_num_candidato
             )
 
-            with open(
-                LOG_1,
-                "a",
-                encoding="utf-8"
-            ) as f:
-
-                horario = datetime.now().strftime(
-                    '%y/%m/%d %H:%M:%S'
-                )
-                ordem_alfabetica(protocolo)
-                f.write(
-                    f"\n\t {horario} - {protocolo}"
-                )
+            ordem_alfa_protocolo(protocolo)
 
             protocolo_criptografado = criptografar(protocolo)
 
