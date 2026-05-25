@@ -9,6 +9,12 @@ e exibição de resultados da eleição.
 LOG = "logs/auditoria.log"
 LOG_1 = "logs/protocolo.log"
 
+
+from utils.criptografia import (
+    criptografar,
+    descriptografar
+)
+
 import random
 import string
 from datetime import datetime
@@ -58,6 +64,9 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     cpf = input("Digite os 4 primeiros dígitos do CPF: ")
     chave = input("Digite sua chave de acesso: ")
 
+    cpf_criptografado = criptografar(cpf)
+    chave_criptorafado = criptografar(chave)
+
     query = """
     SELECT tipo_mesario
     FROM eleitor
@@ -66,7 +75,9 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     AND chave_Acesso = %s;
     """
 
-    cursor.execute(query, (titulo, cpf, chave))
+    
+
+    cursor.execute(query, (titulo, cpf_criptografado, chave_criptorafado))
 
     result = cursor.fetchone()
 
@@ -133,13 +144,17 @@ def encerrar_votacao(votacao_aberta, cursor):
 
             chave = input("Digite sua chave de acesso: ")
 
+            chave_criptografado = criptografar(chave)
+
             query = """
             SELECT id_eleitor
             FROM eleitor
             WHERE chave_Acesso = %s;
             """
 
-            cursor.execute(query, (chave,))
+            
+
+            cursor.execute(query, (chave_criptografado,))
 
             resultado = cursor.fetchone()
 
@@ -459,6 +474,8 @@ def realizar_voto(cursor, conexao, id_eleitor):
                     f"\n\t {horario} - {protocolo}"
                 )
 
+            protocolo_criptografado = criptografar(protocolo)
+
             query_voto = """
             INSERT INTO registro_voto(
                 numero_Candidato,
@@ -473,7 +490,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
                 (
                     input_num_candidato,
                     nome_associado[0],
-                    protocolo
+                    protocolo_criptografado
                 )
             )
 
