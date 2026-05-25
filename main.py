@@ -150,7 +150,7 @@ while opcao == 0:
 
                                     if ja_votou == result[1]:
                                         with open(LOG, "a", encoding="utf-8") as f:
-                                            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+                                            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
                                             f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de voto duplo")
 
                                     print("❌ Você já votou nesta eleição.")

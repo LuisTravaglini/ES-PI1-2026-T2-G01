@@ -35,7 +35,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
         with open(LOG, "a", encoding="utf-8") as f:
 
-            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
 
             f.write(
                 f"\n\t ⚠️ {horario} - ALERTA: "
@@ -46,7 +46,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
         with open(LOG, "a", encoding="utf-8") as f:
 
-            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
 
             f.write(
                 f"\n\t {horario} - ✅ ABERTURA: "
@@ -82,7 +82,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
             with open(LOG, "a", encoding="utf-8") as f:
 
-                horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+                horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
 
                 f.write(
                     f"\n\t {horario} - ⚠️ ALERTA: "
@@ -151,7 +151,7 @@ def encerrar_votacao(votacao_aberta, cursor):
 
                 with open(LOG, "a", encoding="utf-8") as f:
 
-                    horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+                    horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
 
                     f.write(
                         f"\n\t {horario} -🔒 "
@@ -192,7 +192,7 @@ def auditoria(votacao_aberta):
 
         with open(LOG, "a", encoding="utf-8") as f:
 
-            horario = datetime.now().strftime('%d/%m/%y %H:%M:%S')
+            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
 
             f.write(
                 f"\n\t {horario} - ⚠️ ALERTA: "
@@ -452,7 +452,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
             ) as f:
 
                 horario = datetime.now().strftime(
-                    '%d/%m/%y %H:%M:%S'
+                    '%y/%m/%d %H:%M:%S'
                 )
                 ordem_alfabetica(protocolo)
                 f.write(
