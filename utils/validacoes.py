@@ -79,14 +79,83 @@ def validar_titulo(titulo: str) -> bool:
         bool: Retorna True caso o título seja válido
         ou False caso seja inválido.
     """
-
+    # REMOVE QUALQUER COISA QUE NÃO FOR NÚMERO
     numeros = "".join(
         ch for ch in titulo if ch.isdigit()
     )
 
+    # PRECISA TER 12 DÍGITOS
+    if len(numeros) != 12:
+        return False
+
+    # NÃO PODE SER REPETIDO
+    if numeros == numeros[0] * 12:
+        return False
+
+    # PARTES DO TÍTULO
+    sequencial = numeros[:8]
+    uf = numeros[8:10]
+
+    dv1_informado = int(numeros[10])
+    dv2_informado = int(numeros[11])
+
+    # -------------------------
+    # CÁLCULO DO PRIMEIRO DV
+    # -------------------------
+
+    soma1 = 0
+
+    multiplicadores1 = [2, 3, 4, 5, 6, 7, 8, 9]
+
+    for i in range(8):
+
+        soma1 += (
+            int(sequencial[i])
+            * multiplicadores1[i]
+        )
+
+    resto1 = soma1 % 11
+
+    # REGRA:
+    # resto 10 -> DV = 0
+    if resto1 == 10:
+        dv1 = 0
+
+    # REGRA ESPECIAL SP/MG
+    elif resto1 == 0 and uf in ["01", "02"]:
+        dv1 = 1
+
+    else:
+        dv1 = resto1
+
+    # -------------------------
+    # CÁLCULO DO SEGUNDO DV
+    # -------------------------
+
+    soma2 = (
+        int(uf[0]) * 7
+        + int(uf[1]) * 8
+        + dv1 * 9
+    )
+
+    resto2 = soma2 % 11
+
+    # REGRA:
+    # resto 10 -> DV = 0
+    if resto2 == 10:
+        dv2 = 0
+
+    # REGRA ESPECIAL SP/MG
+    elif resto2 == 0 and uf in ["01", "02"]:
+        dv2 = 1
+
+    else:
+        dv2 = resto2
+
+    # COMPARA COM O TÍTULO INFORMADO
     return (
-        len(numeros) == 12
-        and numeros != numeros[0] * 12
+        dv1 == dv1_informado
+        and dv2 == dv2_informado
     )
 
 
