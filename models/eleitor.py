@@ -192,6 +192,16 @@ def cadastrar_eleitor(cursor, conexao):
 
 
 def editar_eleitor(cursor, conexao):
+    """
+    Permiti a edição do eleitor
+    Busca o eleitor pelo cpf, e permiti inserir novos dados para esse eleitor
+
+    Args:
+        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
+        conexao (MySQLConnection): Conexão ativa com o banco de dados.
+    Returns:
+        None: Esta função não possui retorno.
+    """
 
     cpf = input("Digite o CPF do eleitor que deseja editar: ")
     cpf_critografado = criptografar(cpf)
@@ -267,7 +277,15 @@ def editar_eleitor(cursor, conexao):
 
 
 def remover_eleitor(cursor, conexao):
+    """
+    Permite a remoção de um eleitor pelo cpf
 
+    Args:
+        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
+        conexao (MySQLConnection): Conexão ativa com o banco de dados.
+    Returns:
+        None: Esta função não possui retorno.
+    """
     cpf = input(
         "Digite o CPF do eleitor que deseja remover: "
     )

@@ -68,10 +68,6 @@ def validar_titulo(titulo: str) -> bool:
     """
     Valida se um título eleitoral é válido.
 
-    A função verifica se o título possui
-    exatamente 12 dígitos e se não é composto
-    apenas por números repetidos.
-
     Args:
         titulo (str): Título eleitoral informado.
 

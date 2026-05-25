@@ -3,23 +3,23 @@
 Backend de uma urna eletrônica fictícia desenvolvida como parte do Projeto Integrador I.  
 O sistema simula o processo de votação, gerenciamento de candidatos e eleitores, além de auditoria e estatísticas da eleição.
 
-## 👥 Integrantes
+##  Integrantes
 - Arthur Alves Raymundi  
 - Gabriel Souza Gonçalves  
 - Kaiky de Mello Rosa Severino  
 - Luís Felippe Travaglini  
 
-## 🛠️ Tecnologias utilizadas
+##  Tecnologias utilizadas
 - Python 3.14.3  
 - MySQL  
 - Biblioteca Python: `mysql-connector-python`  
 
-## ⚙️ Pré-requisitos
+##  Pré-requisitos
 - Python 3.14.3 instalado  
 - Git instalado  
 - MySQL instalado e em execução  
 
-## 🚀 Instruções para execução
+##  Instruções para execução
 1. Clone o repositório:
    ```bash
    git clone https://github.com/seu-repositorio/urna-eletronica.git
