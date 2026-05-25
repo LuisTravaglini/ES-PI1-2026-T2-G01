@@ -541,19 +541,74 @@ def realizar_voto(cursor, conexao, id_eleitor):
 
     else:
 
-        print(
-            "❌ Nenhum candidato associado "
-            "ao número escolhido!"
-        )
+        print("=" * 30)
+        print("⚠️ VOTO NULO")
+        print("=" * 30)
 
-        print("Tente novamente.\n")
+        confirmar_nulo = input(
+            "\nConfirmar voto nulo? (s/n): "
+        ).lower()
 
-        realizar_voto(
-            cursor,
-            conexao,
-            id_eleitor
-        )
+        if confirmar_nulo == "s":
 
+            protocolo = protocolo_votacao(
+                input_num_candidato
+            )
+
+            protocolo_criptografado = criptografar(
+                protocolo
+            )
+
+            # REGISTRA VOTO NULO
+            query_voto_nulo = """
+            INSERT INTO registro_voto(
+                numero_Candidato,
+                nome_Completo,
+                protocolo
+            )
+            VALUES (%s, %s, %s)
+            """
+
+            cursor.execute(
+                query_voto_nulo,
+                (
+                    input_num_candidato,
+                    "VOTO NULO",
+                    protocolo_criptografado
+                )
+            )
+
+            # MARCA COMO VOTOU
+            query_update = """
+            UPDATE eleitor
+            SET votou = TRUE
+            WHERE id_eleitor = %s
+            """
+
+            cursor.execute(
+                query_update,
+                (id_eleitor,)
+            )
+
+            conexao.commit()
+
+            print("\n✅ Voto nulo registrado!")
+
+            print(
+                f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}"
+            )
+
+        else:
+
+            print(
+                "\nRetornando para seleção "
+                "do candidato...\n"
+            )
+            realizar_voto(
+                cursor,
+                conexao,
+                id_eleitor
+            )
 
 def estatistica_comparecimento(cursor):
     """
