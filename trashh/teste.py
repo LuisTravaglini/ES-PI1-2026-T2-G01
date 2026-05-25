@@ -1,6 +1,6 @@
-from utils.codificar import cifrar_hill
-from utils.descriptografar import decifrar_hill
-from utils.criptografia import (
+from utils.cripto.codificar import cifrar_hill
+from utils.cripto.descriptografar import decifrar_hill
+from utils.cripto.criptografia import (
     criptografar, 
     descriptografar
 )

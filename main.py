@@ -6,7 +6,7 @@ gerenciamento de candidatos e eleitores, além do sistema
 de votação da aplicação.
 """
 
-from utils.criptografia import (
+from utils.cripto.criptografia import (
     criptografar,
     descriptografar
 )
