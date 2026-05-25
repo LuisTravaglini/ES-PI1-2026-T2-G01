@@ -21,9 +21,7 @@ def limpar_menu():
         None: Esta função não possui retorno.
     """
 
-    os.system(
-        'cls' if os.name == 'nt' else 'clear'
-    )
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def ler_opcao(opcoes_validas):
@@ -45,9 +43,7 @@ def ler_opcao(opcoes_validas):
 
         try:
 
-            opcao = int(
-                input("Digite uma das opções: ")
-            )
+            opcao = int(input("Digite uma das opções: "))
 
             if opcao in opcoes_validas:
 

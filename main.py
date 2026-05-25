@@ -210,22 +210,20 @@ while opcao == 0:
                                     if ja_votou == result[1]:
                                         with open(LOG, "a", encoding="utf-8") as f:
                                             horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-                                            f.write(f"\n\t {horario} - ⚠️ ALERTA: Tentativa de voto duplo")
+                                            f.write(f"\n\t {horario} - ALERTA: Tentativa de voto duplo")
 
-                                    print("❌ Você já votou nesta eleição.")
+                                    print("ALERTA: Tentativa de voto duplo.")
                                     input("\nPressione Enter para voltar...")
 
                                 else:
-
-                                    print("Apto a votar")
-
+                                    
                                     # REALIZA O VOTO
                                     votacao.realizar_voto(cursor, conexao, id_eleitor)
-
+                                    print("SUCESSO: Voto realizado com sucesso.")
                                     input("\nPressione Enter para voltar...")
 
                             else:
-                                print("❌ Dados inválidos.")
+                                print("ALERTA: Tentativa de acesso negado.(Dados inválidos)")
                                 input("\nPressione Enter para voltar...")
 
                         # ENCERRAMENTO DA VOTAÇÃO
@@ -259,13 +257,14 @@ while opcao == 0:
                                 # VERIFICA SE O USUÁRIO É MESÁRIO
                                 if tipo_mesario == 1:
                                     votacao_aberta = votacao.encerrar_votacao(votacao_aberta, cursor)
-                                    
+                                    print("ENCERRAMENTO: Votação encerrada com sucesso.")
+
                                     # ENCERRA O LOOP DA VOTAÇÃO
                                     if not votacao_aberta:
                                         break
                                     
                             else:
-                                print("Dados inválidos.")
+                                print("ALERTA: Tentativa de acesso negado.(Dados inválidos)")
                                 input("\nPressione Enter para voltar...")    
                                 
             # AUDITORIA DA VOTAÇÃO  
