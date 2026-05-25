@@ -89,9 +89,10 @@ while opcao == 0:
             print("=== OPÇÕES DO ELEITOR ===")
             print("1 - Lista de eleitores")
             print("2 - Cadastro (Novo eleitor)")
-            print("3 - Voltar")
-
-            opc = ler_opcao([1, 2, 3])
+            print("3 - Editar eleitor")
+            print("4 - Remover eleitor")
+            print("5 - Voltar")
+            opc = ler_opcao([1, 2, 3, 4, 5])
 
             match opc:
 
@@ -128,8 +129,15 @@ while opcao == 0:
                     limpar_menu()
                     eleitor.cadastrar_eleitor(cursor, conexao)
                 
-                # RETORNA AO MENU ANTERIOR
                 case 3:
+                    limpar_menu()
+                    eleitor.editar_eleitor(cursor, conexao)
+
+                case 4:
+                    limpar_menu()
+                    eleitor.remover_eleitor(cursor, conexao)
+
+                case 5:
                     gerenciamento = 0
                     opcao = 1
 
