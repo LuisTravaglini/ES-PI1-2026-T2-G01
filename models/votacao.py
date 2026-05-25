@@ -10,10 +10,9 @@ LOG = "logs/auditoria.log"
 LOG_1 = "logs/protocolo.log"
 
 
-from utils.criptografia import (
-    criptografar,
-    descriptografar
-)
+from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
+from utils.cripto.acesso import criptografar_chave, descriptografar_chave
+from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
 
 import random
 import string
@@ -64,8 +63,8 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     cpf = input("Digite os 4 primeiros dígitos do CPF: ")
     chave = input("Digite sua chave de acesso: ")
 
-    cpf_criptografado = criptografar(cpf)
-    chave_criptorafado = criptografar(chave)
+    cpf_criptografado = criptografar_cpf(cpf)
+    chave_criptorafado = criptografar_chave(chave)
 
     query = """
     SELECT tipo_mesario
@@ -144,7 +143,7 @@ def encerrar_votacao(votacao_aberta, cursor):
 
             chave = input("Digite sua chave de acesso: ")
 
-            chave_criptografado = criptografar(chave)
+            chave_criptografado = criptografar_chave(chave)
 
             query = """
             SELECT id_eleitor
@@ -273,7 +272,7 @@ def resultado(cursor):
 
         for candidato in sorted(
             candidatos,
-            key=ordem_alfabetica
+            key=ordem_alfa_candidatos
         ):
 
             print("=" * 30)
@@ -486,7 +485,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
 
             ordem_alfa_protocolo(protocolo)
 
-            protocolo_criptografado = criptografar(protocolo)
+            protocolo_criptografado = criptografar_protocolo(protocolo)
 
             query_voto = """
             INSERT INTO registro_voto(
@@ -567,7 +566,7 @@ def realizar_voto(cursor, conexao, id_eleitor):
                 input_num_candidato
             )
 
-            protocolo_criptografado = criptografar(
+            protocolo_criptografado = criptografar_protocolo(
                 protocolo
             )
 

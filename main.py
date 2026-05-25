@@ -6,10 +6,10 @@ gerenciamento de candidatos e eleitores, além do sistema
 de votação da aplicação.
 """
 
-from utils.cripto.criptografia import (
-    criptografar,
-    descriptografar
-)
+from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
+from utils.cripto.acesso import criptografar_chave, descriptografar_chave
+from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
+
 from database.conexao import get_conexao
 from utils.ui import ler_opcao, limpar_menu
 import models.candidato as candidato

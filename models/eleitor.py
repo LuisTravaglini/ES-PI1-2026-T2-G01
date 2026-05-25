@@ -4,10 +4,10 @@ Módulo responsável pelo gerenciamento de eleitores.
 Este módulo contém funções para cadastro,
 consulta e listagem de eleitores do sistema.
 """
-from utils.criptografia import (
-    criptografar,
-    descriptografar
-)
+
+from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
+from utils.cripto.acesso import criptografar_chave, descriptografar_chave
+from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
 
 from utils.validacoes import (
     validar_cpf,
@@ -49,7 +49,7 @@ def buscar_por_cpf(cursor, cpf):
     Returns:
         None: Esta função não possui retorno.
     """
-    cpf_criptografado = criptografar(cpf)
+    cpf_criptografado = criptografar_cpf(cpf)
 
     cursor.execute(
         """
@@ -125,7 +125,7 @@ def cadastrar_eleitor(cursor, conexao):
 
         cpf = input("Digite o CPF do eleitor: ")
 
-    cpf_criptografado = criptografar(cpf)
+    cpf_criptografado = criptografar_cpf(cpf)
     titulo = input("Digite o título: ")
 
     while not validar_titulo(titulo):
@@ -141,7 +141,7 @@ def cadastrar_eleitor(cursor, conexao):
     nome = input("Digite o nome do eleitor: ")
 
     chave_Acesso = gerar_chave(nome)
-    chave_criptografada = criptografar(chave_Acesso)
+    chave_criptografada = criptografar_chave(chave_Acesso)
     print(f"Sua chave de acesso é: {chave_Acesso}")
 
     resp = input("Mesário (s/n): ").strip().lower()
@@ -204,7 +204,7 @@ def editar_eleitor(cursor, conexao):
     """
 
     cpf = input("Digite o CPF do eleitor que deseja editar: ")
-    cpf_critografado = criptografar(cpf)
+    cpf_critografado = criptografar_cpf(cpf)
     query_busca = """
     SELECT nome_Completo,
            titulo,
@@ -224,7 +224,7 @@ def editar_eleitor(cursor, conexao):
         input("\nPressione Enter para voltar...")
         return
 
-    chave_descriptografada = descriptografar(eleitor[2])
+    chave_descriptografada = descriptografar_chave(eleitor[2])
     
     print("\n=== DADOS ATUAIS ===")
     print(f"Nome: {eleitor[0]}")
@@ -238,7 +238,7 @@ def editar_eleitor(cursor, conexao):
     novo_titulo = input("Novo título: ")
     nova_chave = input("Nova chave de acesso: ")
 
-    nova_chave_criptografada = criptografar(nova_chave)
+    nova_chave_criptografada = criptografar_chave(nova_chave)
 
     tipo_mesario = input(
         "É mesário? (s/n): "
@@ -290,7 +290,7 @@ def remover_eleitor(cursor, conexao):
         "Digite o CPF do eleitor que deseja remover: "
     )
 
-    cpf_criptografado = criptografar(cpf)
+    cpf_criptografado = criptografar_cpf(cpf)
 
     query_busca = """
     SELECT nome_Completo
