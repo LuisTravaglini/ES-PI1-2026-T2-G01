@@ -1,99 +1,36 @@
 # Urna Eletrônica (Projeto Integrador I)
 
-Backend de uma Urna eletronica ficticia.
+Backend de uma urna eletrônica fictícia desenvolvida como parte do Projeto Integrador I.  
+O sistema simula o processo de votação, gerenciamento de candidatos e eleitores, além de auditoria e estatísticas da eleição.
 
-## Integrantes
-Arthur Alves Raymundi  
-Gabriel Souza Gonçalves  
-Kaiky de Mello Rosa Severino  
-Luís Felippe Travaglini
+## 👥 Integrantes
+- Arthur Alves Raymundi  
+- Gabriel Souza Gonçalves  
+- Kaiky de Mello Rosa Severino  
+- Luís Felippe Travaglini  
 
-## Tecnologias
-Python 3.14.3  
-MySQL  
-Biblioteca Python: `mysql-connector-python`
+## 🛠️ Tecnologias utilizadas
+- Python 3.14.3  
+- MySQL  
+- Biblioteca Python: `mysql-connector-python`  
 
-## Pré-requisitos
-Python 3.14.3 instalado  
-Git instalado  
-MySQL instalado e rodando
+## ⚙️ Pré-requisitos
+- Python 3.14.3 instalado  
+- Git instalado  
+- MySQL instalado e em execução  
 
-## Clonar o repositório:
-```bash
-git clone https://github.com/LuisTravaglini/ES-PI1-2026-T2-G01.git
-cd ES-PI1-2026-T2-G01
-```
+## 🚀 Instruções para execução
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-repositorio/urna-eletronica.git
 
-## Ambiente virtual (venv) e dependências:
+2. Entre na pasta  
+   `cd urna-eletronica`  
 
-### macOS / Linux
-Criar o ambiente virtual (uma vez):
-```bash
-python3 -m venv .venv
-```
+3. Instale dependências  
+   `pip install mysql-connector-python`  
 
-Ativar:
-```bash
-source .venv/bin/activate
-```
+4. Configure o banco MySQL com os scripts fornecidos  
 
-Instalar dependências:
-```bash
-pip install -r requirements.txt
-```
-
-Desativar quando terminar:
-```bash
-deactivate
-```
-
-### Windows (PowerShell)
-Criar o ambiente virtual (uma vez):
-```powershell
-py -m venv .venv
-```
-
-Ativar:
-```powershell
-..venv\Scripts\Activate.ps1
-```
-
-Instalar dependências:
-```powershell
-pip install -r requirements.txt
-```
-
-Desativar:
-```powershell
-deactivate
-```
-
-Se o PowerShell bloquear a ativação, execute uma vez:
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-
-## Importar/criar estrutura do banco (macOS / Linux)
-```bash
-mysql -u root -p < sist_votacao.sql
-```
-
-## Importar/criar estrutura do banco (Windows PowerShell)
-```powershell
-mysql -u root -p < sist_votacao.sql
-```
-
-Observação: se o comando `mysql` não for reconhecido no Windows, é necessário adicionar o MySQL ao PATH ou executar pelo terminal do MySQL instalado.
-
-## Como executar o sistema
-Com o ambiente virtual ativado:
-
-### macOS / Linux
-```bash
-python3 setup.py
-```
-
-### Windows
-```bat
-python setup.py
-```
+5. Rode o sistema  
+   `python main.py`
