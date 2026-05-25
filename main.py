@@ -6,6 +6,10 @@ gerenciamento de candidatos e eleitores, além do sistema
 de votação da aplicação.
 """
 
+from utils.criptografia import (
+    criptografar,
+    descriptografar
+)
 from database.conexao import get_conexao
 from utils.ui import ler_opcao, limpar_menu
 import models.candidato as candidato
@@ -170,6 +174,9 @@ while opcao == 0:
                             cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                             chave = input("Digite sua chave de acesso: ")
 
+                            cpf_criptografado = criptografar(cpf)
+                            chave_criptografado = criptografar(chave)
+
                             # CONSULTA DADOS DO ELEITOR
                             query = """
                             SELECT id_eleitor, votou
@@ -179,7 +186,7 @@ while opcao == 0:
                             AND chave_Acesso = %s;
                             """
                             
-                            cursor.execute(query, (titulo, cpf, chave))
+                            cursor.execute(query, (titulo, cpf_criptografado, chave_criptografado))
                             result = cursor.fetchone()
 
                             # VERIFICA SE O ELEITOR EXISTE
@@ -221,6 +228,9 @@ while opcao == 0:
                             cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                             chave = input("Digite sua chave de acesso: ")
                             
+                            cpf_criptografado = criptografar(cpf)
+                            chave_criptografado = criptografar(chave)
+
                             # CONSULTA DADOS DO MESÁRIO
                             query = """
                             SELECT id_eleitor, votou, tipo_mesario
@@ -230,7 +240,7 @@ while opcao == 0:
                             AND chave_Acesso = %s;
                             """
 
-                            cursor.execute(query, (titulo, cpf, chave))
+                            cursor.execute(query, (titulo, cpf_criptografado, chave_criptografado))
                             result = cursor.fetchone()
 
                             # VERIFICA SE O MESÁRIO EXISTE

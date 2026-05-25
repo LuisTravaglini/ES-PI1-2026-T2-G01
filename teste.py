@@ -4,7 +4,7 @@ from utils.criptografia import (
     criptografar, 
     descriptografar
 )
-texto = "40580282899"
+texto = "GBYXBUDO"
 
 c = criptografar(texto)
 d = descriptografar(c)

@@ -4,7 +4,11 @@ Módulo responsável pelo gerenciamento de eleitores.
 Este módulo contém funções para cadastro,
 consulta e listagem de eleitores do sistema.
 """
-from utils.criptografia import criptografar
+from utils.criptografia import (
+    criptografar,
+    descriptografar
+)
+
 from utils.validacoes import (
     validar_cpf,
     validar_titulo,
@@ -45,6 +49,7 @@ def buscar_por_cpf(cursor, cpf):
     Returns:
         None: Esta função não possui retorno.
     """
+    cpf_criptografado = criptografar(cpf)
 
     cursor.execute(
         """
@@ -52,7 +57,7 @@ def buscar_por_cpf(cursor, cpf):
         FROM Eleitor
         WHERE CPF = %s
         """,
-        (cpf,)
+        (cpf_criptografado,)
     )
 
     for i in cursor.fetchall():
