@@ -168,8 +168,9 @@ while opcao == 0:
                     print("=== VOTAÇÃO ===")
                     print("1 - Votar")
                     print("2 - Encerrar Votação")
+                    print("3 - Voltar")
 
-                    vot = ler_opcao([1, 2])
+                    vot = ler_opcao([1, 2, 3])
 
                     match vot:
 
@@ -264,6 +265,10 @@ while opcao == 0:
                             else:
                                 print("ALERTA: Tentativa de acesso negado.(Dados inválidos)")
                                 input("\nPressione Enter para voltar...")    
+                            
+                        case 3:
+                            break
+                            
                                 
             # AUDITORIA DA VOTAÇÃO  
             case 2:

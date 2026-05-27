@@ -115,9 +115,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
 
     zerar_votos(cursor, conexao)
 
-    print("\n=== Zerézima ===\n")
-
-    input("\nPressione Enter para voltar...")
+    input("\nPressione Enter para prosseguir...")
 
     return True
 
@@ -230,12 +228,14 @@ def resultado(cursor):
     """
 
     cursor.execute("""
-    SELECT nome_Completo,
-           numero_Candidato,
-           partido,
-           votos
+    SELECT candidato.nome_Completo,
+        candidato.numero_Candidato,
+        candidato.partido,
+        COUNT(registro_Voto.id) AS total_votos
     FROM candidato
-    ORDER BY votos DESC
+    LEFT JOIN registro_Voto ON candidato.numero_Candidato = registro_Voto.numero_Candidato
+    GROUP BY candidato.nome_Completo, candidato.numero_Candidato, candidato.partido
+    ORDER BY total_votos DESC
     """)
 
     candidatos = cursor.fetchall()
@@ -330,40 +330,25 @@ def zerar_votos(cursor, conexao):
         None: Esta função não possui retorno.
     """
 
-    cursor.execute("DELETE FROM registro_voto;")
-
-    cursor.execute("""
-    UPDATE candidato
-    SET votos = 0
-    """)
-
-    cursor.execute("""
-    UPDATE eleitor
-    SET votou = FALSE
-    """)
-
+def zerar_votos(cursor, conexao):
+    cursor.execute("DELETE FROM registro_Voto")
     conexao.commit()
 
-    print("\n=== ZERÉSIMA ===")
-    print("Todos os candidatos iniciam com 0 votos.\n")
-
     cursor.execute("""
-    SELECT nome_Completo,
-           numero_Candidato,
-           votos
-    FROM candidato
-    ORDER BY nome_Completo
+        SELECT c.nome_Completo,
+               COUNT(r.id) AS total_votos
+        FROM candidato c
+        LEFT JOIN registro_Voto r ON c.numero_Candidato = r.numero_Candidato
+        GROUP BY c.nome_Completo
     """)
 
     candidatos = cursor.fetchall()
 
+    print("\n✅ Votos zerados com sucesso!")
+    print("=" * 40)
     for candidato in candidatos:
-
-        print("=" * 30)
-        print(f"Nome: {candidato[0]}")
-        print(f"Número: {candidato[1]}")
-        print(f"Votos: {candidato[2]}")
-
+        print(f"{candidato[0]} - {candidato[1]} votos")
+    print("=" * 40)
 
 
 
@@ -490,30 +475,17 @@ def realizar_voto(cursor, conexao, id_eleitor):
             query_voto = """
             INSERT INTO registro_voto(
                 numero_Candidato,
-                nome_Completo,
                 protocolo
             )
-            VALUES (%s, %s, %s)
+            VALUES (%s, %s)
             """
 
             cursor.execute(
                 query_voto,
                 (
                     input_num_candidato,
-                    nome_associado[0],
                     protocolo_criptografado
                 )
-            )
-
-            query_update_candidato = """
-            UPDATE candidato
-            SET votos = COALESCE(votos, 0) + 1
-            WHERE numero_Candidato = %s
-            """
-
-            cursor.execute(
-                query_update_candidato,
-                (input_num_candidato,)
             )
 
             query_update = """
@@ -574,17 +546,15 @@ def realizar_voto(cursor, conexao, id_eleitor):
             query_voto_nulo = """
             INSERT INTO registro_voto(
                 numero_Candidato,
-                nome_Completo,
                 protocolo
             )
-            VALUES (%s, %s, %s)
+            VALUES (%s, %s)
             """
 
             cursor.execute(
                 query_voto_nulo,
                 (
-                    input_num_candidato,
-                    "VOTO NULO",
+                    None,
                     protocolo_criptografado
                 )
             )
