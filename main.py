@@ -297,7 +297,7 @@ while opcao == 0:
                             break
 
             # RETORNA AO MENU PRINCIPAL
-            case 6:
+            case 4:
                 opcao = 0
                 break
  
