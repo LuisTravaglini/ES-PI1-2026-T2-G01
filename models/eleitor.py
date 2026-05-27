@@ -5,7 +5,7 @@ Este módulo contém funções para cadastro,
 consulta e listagem de eleitores do sistema.
 """
 
-from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
+from utils.cripto.cpf import criptografar_cpf
 from utils.cripto.acesso import criptografar_chave, descriptografar_chave
 from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
 

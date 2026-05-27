@@ -232,7 +232,7 @@ while opcao == 0:
                             cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                             chave = input("Digite sua chave de acesso: ")
                             
-                            cpf_criptografado = criptografar_cpf(cpf)
+                            cpf_criptografado = criptografar(cpf)
                             chave_criptografado = criptografar_chave(chave)
 
                             # CONSULTA DADOS DO MESÁRIO
