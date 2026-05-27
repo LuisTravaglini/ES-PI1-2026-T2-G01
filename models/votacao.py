@@ -11,6 +11,7 @@ LOG_1 = "logs/protocolo.log"
 
 
 from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
+from utils.cripto.cpf import criptografar_prefixo4_cpf
 from utils.cripto.acesso import criptografar_chave, descriptografar_chave
 from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
 
@@ -63,7 +64,7 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     cpf = input("Digite os 4 primeiros dígitos do CPF: ")
     chave = input("Digite sua chave de acesso: ")
 
-    cpf_criptografado = criptografar_cpf(cpf)
+    cpf_criptografado4 = criptografar_prefixo4_cpf(cpf)
     chave_criptorafado = criptografar_chave(chave)
 
     query = """
@@ -74,9 +75,8 @@ def abrir_votacao(cursor, conexao, votacao_aberta):
     AND chave_Acesso = %s;
     """
 
-    
 
-    cursor.execute(query, (titulo, cpf_criptografado, chave_criptorafado))
+    cursor.execute(query, (titulo, cpf_criptografado4, chave_criptorafado))
 
     result = cursor.fetchone()
 

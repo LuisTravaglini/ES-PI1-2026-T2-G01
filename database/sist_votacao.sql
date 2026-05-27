@@ -11,7 +11,7 @@ VALUES
 INSERT INTO eleitor 
 (CPF, nome_Completo, titulo, chave_Acesso, tipo_mesario, votou)
 VALUES
-('53852909805', 'Gabriel Souza Gonçalves', '658633800159', 'gas8212', TRUE, FALSE),
+('53852909805', 'Gabriel Souza Gonçalves', '658633800159', 'gas0451', TRUE, FALSE),
 ('40580282989', 'Kaiky Mello Rosa Severino', '413836750140', 'kam1667', FALSE, FALSE),
 ('98745632100', 'Lucas Andrade Martins', '521478963214', 'luc4521', FALSE, FALSE),
 ('71420598036', 'Mariana Costa Ribeiro', '842157369852', 'mar9901', FALSE, FALSE),
