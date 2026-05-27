@@ -311,7 +311,7 @@ def resultado(cursor):
             print(f"Total de votos: {partido[1]}")
             print("=" * 30)
 
-    input("\nPressione Enter para voltar...")
+    input("\nPressione Enter para filtrar os resultados...")
 
 
 def zerar_votos(cursor, conexao):

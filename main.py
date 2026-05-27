@@ -5,7 +5,7 @@ Este módulo é responsável pelo controle do menu principal,
 gerenciamento de candidatos e eleitores, além do sistema
 de votação da aplicação.
 """
-from utils.cripto.cpf import criptografar_prefixo4_cpf
+
 from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
 from utils.cripto.acesso import criptografar_chave, descriptografar_chave
 from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
@@ -151,10 +151,8 @@ while opcao == 0:
         print("1 - Abrir votação")
         print("2 - Auditoria da votação")
         print("3 - Resultado da votação")
-        print("4 - Estatística de Comparecimento")
-        print("5 - Validação de Integridade")
-        print("6 - Voltar")
-        opc = ler_opcao([1, 2, 3, 4, 5, 6])
+        print("4 - Voltar")
+        opc = ler_opcao([1, 2, 3, 4])
 
         match opc:
 
@@ -182,7 +180,7 @@ while opcao == 0:
                             cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                             chave = input("Digite sua chave de acesso: ")
 
-                            cpf_criptografado4 = criptografar_prefixo4_cpf(cpf)
+                            cpf_criptografado = criptografar_cpf(cpf)
                             chave_criptografado = criptografar_chave(chave)
 
                             # CONSULTA DADOS DO ELEITOR
@@ -194,7 +192,7 @@ while opcao == 0:
                             AND chave_Acesso = %s;
                             """
                             
-                            cursor.execute(query, (titulo, cpf_criptografado4, chave_criptografado))
+                            cursor.execute(query, (titulo, cpf_criptografado, chave_criptografado))
                             result = cursor.fetchone()
 
                             # VERIFICA SE O ELEITOR EXISTE
@@ -234,7 +232,7 @@ while opcao == 0:
                             cpf = input("Digite os 4 primeiros dígitos do CPF: ")
                             chave = input("Digite sua chave de acesso: ")
                             
-                            cpf_criptografado4 = criptografar_prefixo4_cpf(cpf)
+                            cpf_criptografado = criptografar_cpf(cpf)
                             chave_criptografado = criptografar_chave(chave)
 
                             # CONSULTA DADOS DO MESÁRIO
@@ -246,7 +244,7 @@ while opcao == 0:
                             AND chave_Acesso = %s;
                             """
 
-                            cursor.execute(query, (titulo, cpf_criptografado4, chave_criptografado))
+                            cursor.execute(query, (titulo, cpf_criptografado, chave_criptografado))
                             result = cursor.fetchone()
 
                             # VERIFICA SE O MESÁRIO EXISTE
@@ -276,15 +274,27 @@ while opcao == 0:
             case 3:
                 limpar_menu()
                 votacao.resultado(cursor)
-            # ESTATÍSTICAS DE COMPARECIMENTO
-            case 4:
-                limpar_menu()
-                votacao.estatistica_comparecimento(cursor)
+                
+                filtros = 'ativo'
+                while filtros == 'ativo':
+                    print("\n=== FILTROS RESULTADO ===")
+                    print("1 - Estatísticas de comparecimento")
+                    print("2 - Validação de integridade")
+                    print("3 - Voltar")
 
-            # VALIDAÇÃO DE INTEGRIDADE
-            case 5:
-                limpar_menu()
-                votacao.validacao_integridade(cursor)
+                    resu = ler_opcao([1,2,3])
+                    match resu:
+                        # ESTATÍSTICAS DE COMPARECIMENTO
+                        case 1:
+                            limpar_menu()
+                            votacao.estatistica_comparecimento(cursor)
+
+                        # VALIDAÇÃO DE INTEGRIDADE
+                        case 2:
+                            limpar_menu()
+                            votacao.validacao_integridade(cursor)
+                        case 3:
+                            break
 
             # RETORNA AO MENU PRINCIPAL
             case 6:
