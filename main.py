@@ -151,10 +151,8 @@ while opcao == 0:
         print("1 - Abrir votação")
         print("2 - Auditoria da votação")
         print("3 - Resultado da votação")
-        print("4 - Estatística de Comparecimento")
-        print("5 - Validação de Integridade")
-        print("6 - Voltar")
-        opc = ler_opcao([1, 2, 3, 4, 5, 6])
+        print("4 - Voltar")
+        opc = ler_opcao([1, 2, 3, 4])
 
         match opc:
 
@@ -276,15 +274,27 @@ while opcao == 0:
             case 3:
                 limpar_menu()
                 votacao.resultado(cursor)
-            # ESTATÍSTICAS DE COMPARECIMENTO
-            case 4:
-                limpar_menu()
-                votacao.estatistica_comparecimento(cursor)
+                
+                filtros = 'ativo'
+                while filtros == 'ativo':
+                    print("\n=== FILTROS RESULTADO ===")
+                    print("1 - Estatísticas de comparecimento")
+                    print("2 - Validação de integridade")
+                    print("3 - Voltar")
 
-            # VALIDAÇÃO DE INTEGRIDADE
-            case 5:
-                limpar_menu()
-                votacao.validacao_integridade(cursor)
+                    resu = ler_opcao([1,2,3])
+                    match resu:
+                        # ESTATÍSTICAS DE COMPARECIMENTO
+                        case 1:
+                            limpar_menu()
+                            votacao.estatistica_comparecimento(cursor)
+
+                        # VALIDAÇÃO DE INTEGRIDADE
+                        case 2:
+                            limpar_menu()
+                            votacao.validacao_integridade(cursor)
+                        case 3:
+                            break
 
             # RETORNA AO MENU PRINCIPAL
             case 6:
