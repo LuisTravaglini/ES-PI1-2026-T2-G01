@@ -6,213 +6,153 @@ registro de votos, auditoria, validação de integridade
 e exibição de resultados da eleição.
 """
 
+from datetime import datetime
+import random
+import string
+
+from utils.cripto.chave import criptografar_chave
+from utils.cripto.protocolo import criptografar_protocolo
+
 LOG = "logs/auditoria.log"
 LOG_1 = "logs/protocolo.log"
 
 
-from utils.cripto.cpf import criptografar_cpf, descriptografar_cpf
-from utils.cripto.cpf import criptografar_prefixo4_cpf
-from utils.cripto.acesso import criptografar_chave, descriptografar_chave
-from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
-
-import random
-import string
-from datetime import datetime
+def _so_digitos(s: str) -> str:
+    """Mantém apenas dígitos."""
+    return "".join(ch for ch in str(s) if ch.isdigit())
 
 
-def abrir_votacao(cursor, conexao, votacao_aberta):
+def abrir_votacao(cursor, conexao, votacao_aberta: bool) -> bool:
     """
     Realiza a abertura oficial da votação.
 
-    A função valida se o usuário possui permissão de mesário
-    antes de iniciar o processo eleitoral e zerar os votos.
+    Solicita título, 4 primeiros dígitos do CPF e chave de acesso.
+    Valida se é mesário e realiza a Zerézima (limpa votos e imprime total zerado).
 
     Args:
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
-        conexao (MySQLConnection): Conexão ativa com o banco de dados.
-        votacao_aberta (bool): Indica se a votação já está aberta.
+        cursor: Cursor do MySQL.
+        conexao: Conexão MySQL.
+        votacao_aberta (bool): Indica se a votação está aberta.
 
     Returns:
-        bool: Retorna True caso a votação seja iniciada com sucesso,
-        ou False caso a autenticação falhe.
+        bool: True se a votação foi aberta, False caso contrário.
     """
 
     if votacao_aberta:
-
         with open(LOG, "a", encoding="utf-8") as f:
-
-            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-
-            f.write(
-                f"\n\t ⚠️ {horario} - ALERTA: "
-                "Tentativa de abrir votação já aberta"
-            )
-
-    else:
-
-        with open(LOG, "a", encoding="utf-8") as f:
-
-            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-
-            f.write(
-                f"\n\t {horario} - ✅ ABERTURA: "
-                "Votação iniciada com sucesso. "
-                "Total de votos zerado"
-            )
+            horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            f.write(f"\n[{horario}] ALERTA: Tentativa de abrir votação já aberta.\n")
 
     titulo = input("Digite seu titulo: ")
-    cpf = input("Digite os 4 primeiros dígitos do CPF: ")
+    cpf4 = input("Digite os 4 primeiros dígitos do CPF: ")
     chave = input("Digite sua chave de acesso: ")
 
-    cpf_criptografado4 = criptografar_prefixo4_cpf(cpf)
-    chave_criptorafado = criptografar_chave(chave)
+    cpf4 = _so_digitos(cpf4)
+    if len(cpf4) != 4:
+        print("Dados inválidos (CPF precisa ter 4 dígitos).")
+        input("\nPressione Enter para voltar...")
+        return False
+
+    chave_criptografada = criptografar_chave(chave)
 
     query = """
     SELECT tipo_mesario
     FROM eleitor
     WHERE titulo = %s
-    AND LEFT(CPF,4) = %s
-    AND chave_Acesso = %s;
+      AND cpf_prefixo4 = %s
+      AND chave_Acesso = %s;
     """
 
-
-    cursor.execute(query, (titulo, cpf_criptografado4, chave_criptorafado))
-
+    cursor.execute(query, (titulo, cpf4, chave_criptografada))
     result = cursor.fetchone()
 
-    if result:
-
-        tipo_mesario = result[0]
-
-        if tipo_mesario:
-
-            print("É mesário, iniciando votação...")
-
-        else:
-
-            with open(LOG, "a", encoding="utf-8") as f:
-
-                horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-
-                f.write(
-                    f"\n\t {horario} - ⚠️ ALERTA: "
-                    "Tentativa de acesso negado"
-                )
-
-            print("Você não possui permissão de mesário.")
-
-            input("\nPressione Enter para voltar...")
-
-            return False
-
-    else:
+    if not result:
+        with open(LOG, "a", encoding="utf-8") as f:
+            horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            f.write(f"\n[{horario}] ALERTA: Tentativa de acesso negado.\n")
 
         print("Dados inválidos.")
-
         input("\nPressione Enter para voltar...")
-
         return False
 
+    tipo_mesario = result[0]
+    if not tipo_mesario:
+        with open(LOG, "a", encoding="utf-8") as f:
+            horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            f.write(f"\n[{horario}] ALERTA: Tentativa de acesso negado (não é mesário).\n")
+
+        print("Você não possui permissão de mesário.")
+        input("\nPressione Enter para voltar...")
+        return False
+
+    # Zerézima
     zerar_votos(cursor, conexao)
 
-    input("\nPressione Enter para prosseguir...")
+    with open(LOG, "a", encoding="utf-8") as f:
+        horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        f.write(f"\n[{horario}] ABERTURA: Votação iniciada com sucesso. Total de votos zerado.\n")
 
+    input("\nPressione Enter para prosseguir...")
     return True
 
 
-def encerrar_votacao(votacao_aberta, cursor):
+def encerrar_votacao(votacao_aberta: bool, cursor) -> bool:
     """
     Realiza o encerramento oficial da votação.
 
     Args:
         votacao_aberta (bool): Indica se a votação está aberta.
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
+        cursor: Cursor do MySQL.
 
     Returns:
-        bool: Retorna False caso a votação seja encerrada
-        ou True caso continue aberta.
+        bool: False se encerrou (urna fechada), True se continua aberta.
     """
 
-    resp = input("Deseja realmente encerrar a votação?(sim/não): ")
-
-    if resp.lower() == "sim":
-
-        if votacao_aberta:
-
-            chave = input("Digite sua chave de acesso: ")
-
-            chave_criptografado = criptografar_chave(chave)
-
-            query = """
-            SELECT id_eleitor
-            FROM eleitor
-            WHERE chave_Acesso = %s;
-            """
-
-            
-
-            cursor.execute(query, (chave_criptografado,))
-
-            resultado = cursor.fetchone()
-
-            if resultado:
-
-                print("=" * 30)
-                print("Encerrando votação...")
-                print("=" * 30)
-
-                with open(LOG, "a", encoding="utf-8") as f:
-
-                    horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-
-                    f.write(
-                        f"\n\t {horario} -🔒 "
-                        "A votação foi ENCERRADA!"
-                    )
-
-                print("Votação encerrada.")
-
-                return False
-
-            else:
-
-                print("Chave de acesso inválida.")
-
-                input("\nPressione Enter para voltar...")
-
-                return True
-
-    else:
-
-        print("\nVocê não tem permissão para encerrar a votação.")
-
+    resp = input("Deseja realmente encerrar a votação?(sim/não): ").strip().lower()
+    if resp != "sim":
+        print("Encerramento cancelado.")
         return True
 
+    if not votacao_aberta:
+        print("Votação já está encerrada.")
+        return False
 
-def auditoria(votacao_aberta):
+    chave = input("Digite sua chave de acesso (confirmação): ")
+    chave_criptografada = criptografar_chave(chave)
+
+    query = """
+    SELECT id_eleitor
+    FROM eleitor
+    WHERE chave_Acesso = %s AND tipo_mesario = 1;
     """
-    Realiza a auditoria do sistema eleitoral.
+    cursor.execute(query, (chave_criptografada,))
+    resultado = cursor.fetchone()
+
+    if not resultado:
+        print("Chave de acesso inválida.")
+        input("\nPressione Enter para voltar...")
+        return True
+
+    with open(LOG, "a", encoding="utf-8") as f:
+        horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        f.write(f"\n[{horario}] ENCERRAMENTO: Votação finalizada com sucesso.\n")
+
+    print("Votação encerrada.")
+    return False
+
+
+def auditoria(votacao_aberta: bool):
+    """
+    Realiza a auditoria do sistema eleitoral (mensagem + leitura de logs, se existir).
 
     Args:
         votacao_aberta (bool): Indica se a votação está aberta.
 
     Returns:
-        None: Esta função não possui retorno.
+        None
     """
-
     if not votacao_aberta:
-
-        with open(LOG, "a", encoding="utf-8") as f:
-
-            horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-
-            f.write(
-                f"\n\t {horario} - ⚠️ ALERTA: "
-                "Para auditar, a votação precisa estar aberta!"
-            )
-
         print("A votação precisa estar aberta para auditar.")
-
     input("\nPressione Enter para voltar...")
 
 
@@ -221,31 +161,27 @@ def resultado(cursor):
     Exibe o resultado da eleição e os votos por partido.
 
     Args:
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
+        cursor: Cursor do MySQL.
 
     Returns:
-        None: Esta função não possui retorno.
+        None
     """
-
     cursor.execute("""
     SELECT candidato.nome_Completo,
-        candidato.numero_Candidato,
-        candidato.partido,
-        COUNT(registro_Voto.id) AS total_votos
+           candidato.numero_Candidato,
+           candidato.partido,
+           COUNT(registro_voto.id) AS total_votos
     FROM candidato
-    LEFT JOIN registro_Voto ON candidato.numero_Candidato = registro_Voto.numero_Candidato
+    LEFT JOIN registro_voto
+           ON candidato.numero_Candidato = registro_voto.numero_Candidato
     GROUP BY candidato.nome_Completo, candidato.numero_Candidato, candidato.partido
     ORDER BY total_votos DESC
     """)
 
     candidatos = cursor.fetchall()
-
     if not candidatos:
-
         print("Nenhum candidato encontrado.")
-
         input("\nPressione Enter para voltar...")
-
         return
 
     print("=" * 40)
@@ -253,397 +189,234 @@ def resultado(cursor):
     print("=" * 40)
 
     vencedor = candidatos[0]
-
-    print("\n🏆 VENCEDOR DA ELEIÇÃO")
+    print("\nVENCEDOR DA ELEIÇÃO")
     print(f"Nome: {vencedor[0]}")
     print(f"Número: {vencedor[1]}")
     print(f"Partido: {vencedor[2]}")
     print(f"Votos: {vencedor[3]}")
 
-    print("\n" + "=" * 40)
-
-    opcao = input(
-        "Deseja ver os demais candidatos? (s/n): "
-    ).lower()
-
-    if opcao == "s":
-
-        print("\n📊 TODOS OS RESULTADOS\n")
-
-        for candidato in sorted(
-            candidatos,
-            key=ordem_alfa_candidatos
-        ):
-
-            print("=" * 30)
-            print(f"Nome: {candidato[0]}")
-            print(f"Número: {candidato[1]}")
-            print(f"Partido: {candidato[2]}")
-            print(f"Total de votos: {candidato[3]}")
-            print("=" * 30)
-
-    opc1 = input(
-        "Deseja ver os votos por partido (s/n): "
-    ).lower()
-
-    if opc1 == "s":
-
-        print("\n" + "=" * 40)
-        print("VOTOS POR PARTIDO")
-        print("=" * 40)
-
-        query_partidos = """
-        SELECT partido,
-               SUM(votos) AS total_votos
-        FROM candidato
-        GROUP BY partido
-        ORDER BY total_votos DESC
-        """
-
-        cursor.execute(query_partidos)
-
-        partidos = cursor.fetchall()
-
-        for partido in partidos:
-
-            print("=" * 30)
-            print(f"Partido: {partido[0]}")
-            print(f"Total de votos: {partido[1]}")
-            print("=" * 30)
-
-    input("\nPressione Enter para filtrar os resultados...")
+    input("\nPressione Enter para voltar...")
 
 
 def zerar_votos(cursor, conexao):
     """
-    Reinicia todos os votos da eleição.
-
-    A função remove registros de votos anteriores,
-    zera os votos dos candidatos e redefine os eleitores
-    como não votantes.
+    Zerézima: remove votos anteriores e imprime candidatos com 0 votos.
 
     Args:
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
-        conexao (MySQLConnection): Conexão ativa com o banco de dados.
+        cursor: Cursor do MySQL.
+        conexao: Conexão MySQL.
 
     Returns:
-        None: Esta função não possui retorno.
+        None
     """
 
-def zerar_votos(cursor, conexao):
-    cursor.execute("DELETE FROM registro_Voto")
+    # limpa votos
+    cursor.execute("DELETE FROM registro_voto")
     conexao.commit()
 
+    # imprime contagem zerada
     cursor.execute("""
         SELECT c.nome_Completo,
                COUNT(r.id) AS total_votos
         FROM candidato c
-        LEFT JOIN registro_Voto r ON c.numero_Candidato = r.numero_Candidato
+        LEFT JOIN registro_voto r
+               ON c.numero_Candidato = r.numero_Candidato
         GROUP BY c.nome_Completo
+        ORDER BY c.nome_Completo ASC
     """)
 
     candidatos = cursor.fetchall()
 
-    print("\n✅ Votos zerados com sucesso!")
+    print("\n=== ZERÉZIMA ===")
+    for c in candidatos:
+        print(f"{c[0]} - {c[1]} votos")
     print("=" * 40)
-    for candidato in candidatos:
-        print(f"{candidato[0]} - {candidato[1]} votos")
-    print("=" * 40)
 
 
-
-def ordem_alfa_candidatos(candidato):
-    """
-    Retorna o nome do candidato em letras minúsculas
-    para auxiliar na ordenação alfabética.
-
-    Args:
-        candidato (tuple): Dados do candidato.
-
-    Returns:
-        str: Nome do candidato em letras minúsculas.
-    """
-    return candidato[0].lower()
-
-
-
-def chave_ordemalfa(linha):
+def chave_ordemalfa(linha: str) -> str:
     partes = linha.strip().split("-")
     if len(partes) >= 2:
         return partes[-1].lower()
     return linha.strip().lower()
 
 
-def ordem_alfa_protocolo(protocolo):
-    
-    with open(LOG_1, "a", encoding="utf-8") as f:
-        horario = datetime.now().strftime('%y/%m/%d %H:%M:%S')
-        f.write(f" {horario} - {protocolo}\n")
+def ordem_alfa_protocolo(protocolo: str):
+    """
+    Registra protocolo em arquivo e mantém o arquivo ordenado alfabeticamente.
 
-    
+    Args:
+        protocolo (str): Protocolo em claro.
+
+    Returns:
+        None
+    """
+    with open(LOG_1, "a", encoding="utf-8") as f:
+        horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        f.write(f"{horario} - {protocolo}\n")
+
     with open(LOG_1, "r", encoding="utf-8") as f:
         linhas = f.readlines()
 
-    
     with open(LOG_1, "w", encoding="utf-8") as f:
         f.writelines(sorted(linhas, key=chave_ordemalfa))
 
 
-def protocolo_votacao(numero_candidato):
-        
-
+def protocolo_votacao(numero_candidato: int) -> str:
     """
     Gera um protocolo único para o voto registrado.
+
+    Padrão: "V" + 2 letras + "26" + número do candidato (2 dígitos) + 5 dígitos aleatórios.
 
     Args:
         numero_candidato (int): Número do candidato votado.
 
     Returns:
-        str: Código único de protocolo da votação.
+        str: Protocolo (12 caracteres).
     """
-
-    letras_aleatorias = ''.join(
-        random.sample(string.ascii_uppercase, k=2)
-    )
-
-    numeros_aleatorios = ''.join(
-        map(str, random.sample(range(1, 9), k=5))
-    )
-
-    return (
-        f'V{letras_aleatorias}'
-        f'26{str(numero_candidato)}'
-        f'{numeros_aleatorios}'
-    )
+    letras_aleatorias = ''.join(random.sample(string.ascii_uppercase, k=2))
+    numeros_aleatorios = ''.join(str(random.randint(0, 9)) for _ in range(5))
+    return f"V{letras_aleatorias}26{int(numero_candidato):02d}{numeros_aleatorios}"
 
 
-
-def realizar_voto(cursor, conexao, id_eleitor):
+def realizar_voto(cursor, conexao, id_eleitor: int):
     """
     Registra o voto do eleitor no sistema.
 
     Args:
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
-        conexao (MySQLConnection): Conexão ativa com o banco de dados.
+        cursor: Cursor do MySQL.
+        conexao: Conexão MySQL.
         id_eleitor (int): Identificador único do eleitor.
 
     Returns:
-        None: Esta função não possui retorno.
+        None
     """
 
     print("=" * 30)
     print("SEU VOTO PARA PRESIDENTE")
     print("=" * 30)
 
-    input_num_candidato = int(input("\nNúmero: "))
+    try:
+        input_num_candidato = int(input("\nNúmero: "))
+    except ValueError:
+        print("Número inválido.")
+        input("\nPressione Enter para voltar...")
+        return
 
     cursor.execute(
         """
-        SELECT nome_Completo,
-               partido,
-               numero_Candidato
+        SELECT nome_Completo, partido, numero_Candidato
         FROM candidato
         WHERE numero_Candidato = %s
         """,
         (input_num_candidato,)
     )
-
     nome_associado = cursor.fetchone()
 
-    if nome_associado:
-
-        print("=" * 30)
-
-        print(f"\nNome: {nome_associado[0]}")
-        print(f"Partido: {nome_associado[1]}")
-        print(f"Número: {nome_associado[2]}")
-
-        confirmar = input(
-            "\nConfirmar voto? (s/n): "
-        ).lower()
-
-        if confirmar == "s":
-
-            protocolo = protocolo_votacao(
-                input_num_candidato
-            )
-
-            ordem_alfa_protocolo(protocolo)
-
-            protocolo_criptografado = criptografar_protocolo(protocolo)
-
-            query_voto = """
-            INSERT INTO registro_voto(
-                numero_Candidato,
-                protocolo
-            )
-            VALUES (%s, %s)
-            """
-
-            cursor.execute(
-                query_voto,
-                (
-                    input_num_candidato,
-                    protocolo_criptografado
-                )
-            )
-
-            query_update = """
-            UPDATE eleitor
-            SET votou = TRUE
-            WHERE id_eleitor = %s
-            """
-
-            cursor.execute(
-                query_update,
-                (id_eleitor,)
-            )
-
-            conexao.commit()
-
-            print("\n✅ Voto registrado com sucesso!")
-
-            print(
-                f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}"
-            )
-
-        else:
-
-            print("\n⚠️ Voto não confirmado.")
-
-            print(
-                "Retornando para seleção "
-                "do candidato...\n"
-            )
-
-            realizar_voto(
-                cursor,
-                conexao,
-                id_eleitor
-            )
-
-    else:
-
+    # se não existe candidato, é voto nulo
+    if not nome_associado:
         print("=" * 30)
         print("⚠️ VOTO NULO")
         print("=" * 30)
 
-        confirmar_nulo = input(
-            "\nConfirmar voto nulo? (s/n): "
-        ).lower()
+        confirmar_nulo = input("\nConfirmar voto nulo? (s/n): ").lower()
+        if confirmar_nulo != "s":
+            print("Retornando...")
+            return
 
-        if confirmar_nulo == "s":
+        protocolo = protocolo_votacao(0)  # opcional: 00 como “nulo”
+        ordem_alfa_protocolo(protocolo)
+        protocolo_criptografado = criptografar_protocolo(protocolo)
 
-            protocolo = protocolo_votacao(
-                input_num_candidato
-            )
-
-            protocolo_criptografado = criptografar_protocolo(
-                protocolo
-            )
-
-            # REGISTRA VOTO NULO
-            query_voto_nulo = """
-            INSERT INTO registro_voto(
-                numero_Candidato,
-                protocolo
-            )
-            VALUES (%s, %s)
+        cursor.execute(
             """
+            INSERT INTO registro_voto (numero_Candidato, protocolo)
+            VALUES (%s, %s)
+            """,
+            (None, protocolo_criptografado)
+        )
 
-            cursor.execute(
-                query_voto_nulo,
-                (
-                    None,
-                    protocolo_criptografado
-                )
-            )
-
-            # MARCA COMO VOTOU
-            query_update = """
+        cursor.execute(
+            """
             UPDATE eleitor
             SET votou = TRUE
             WHERE id_eleitor = %s
-            """
+            """,
+            (id_eleitor,)
+        )
 
-            cursor.execute(
-                query_update,
-                (id_eleitor,)
-            )
+        conexao.commit()
+        print("\n✅ Voto nulo registrado!")
+        print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
+        return
 
-            conexao.commit()
+    # candidato existe
+    print("=" * 30)
+    print(f"\nNome: {nome_associado[0]}")
+    print(f"Partido: {nome_associado[1]}")
+    print(f"Número: {nome_associado[2]}")
 
-            print("\n✅ Voto nulo registrado!")
+    confirmar = input("\nConfirmar voto? (s/n): ").lower()
+    if confirmar != "s":
+        print("\n⚠️ Voto não confirmado.")
+        print("Retornando...\n")
+        return
 
-            print(
-                f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}"
-            )
+    protocolo = protocolo_votacao(input_num_candidato)
+    ordem_alfa_protocolo(protocolo)
+    protocolo_criptografado = criptografar_protocolo(protocolo)
 
-        else:
+    cursor.execute(
+        """
+        INSERT INTO registro_voto (numero_Candidato, protocolo)
+        VALUES (%s, %s)
+        """,
+        (input_num_candidato, protocolo_criptografado)
+    )
 
-            print(
-                "\nRetornando para seleção "
-                "do candidato...\n"
-            )
-            realizar_voto(
-                cursor,
-                conexao,
-                id_eleitor
-            )
+    cursor.execute(
+        """
+        UPDATE eleitor
+        SET votou = TRUE
+        WHERE id_eleitor = %s
+        """,
+        (id_eleitor,)
+    )
+
+    conexao.commit()
+
+    with open(LOG, "a", encoding="utf-8") as f:
+        horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        f.write(f"\n[{horario}] SUCESSO: Voto realizado com sucesso.\n")
+
+    print("\n✅ Voto registrado com sucesso!")
+    print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
+
 
 def estatistica_comparecimento(cursor):
     """
     Exibe estatísticas de comparecimento dos eleitores.
 
     Args:
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
+        cursor: Cursor do MySQL.
 
     Returns:
-        None: Esta função não possui retorno.
+        None
     """
 
-    query_total = """
-    SELECT COUNT(*)
-    FROM eleitor
-    """
-
-    cursor.execute(query_total)
-
+    cursor.execute("SELECT COUNT(*) FROM eleitor")
     total_eleitores = cursor.fetchone()[0]
 
-    query_votaram = """
-    SELECT COUNT(*)
-    FROM eleitor
-    WHERE votou = TRUE
-    """
-
-    cursor.execute(query_votaram)
-
+    cursor.execute("SELECT COUNT(*) FROM eleitor WHERE votou = TRUE")
     total_votaram = cursor.fetchone()[0]
 
-    porcentagem = (
-        total_votaram / total_eleitores
-    ) * 100
+    porcentagem = (total_votaram / total_eleitores * 100) if total_eleitores else 0
 
     print("=" * 40)
     print("ESTATÍSTICA DE COMPARECIMENTO")
     print("=" * 40)
-
-    print(
-        f"Total de eleitores aptos: "
-        f"{total_eleitores}"
-    )
-
-    print(
-        f"Total de comparecimento: "
-        f"{total_votaram}"
-    )
-
-    print(
-        f"Percentual de comparecimento: "
-        f"{porcentagem:.2f}%"
-    )
-
+    print(f"Total de eleitores aptos: {total_eleitores}")
+    print(f"Total de comparecimento: {total_votaram}")
+    print(f"Percentual de comparecimento: {porcentagem:.2f}%")
     input("\nPressione Enter para voltar...")
 
 
@@ -651,63 +424,28 @@ def validacao_integridade(cursor):
     """
     Valida a integridade dos votos registrados.
 
-    A função compara o total de votos registrados
-    com o total de eleitores marcados como votantes.
-
     Args:
-        cursor (MySQLCursor): Cursor responsável pelas consultas SQL.
+        cursor: Cursor do MySQL.
 
     Returns:
-        None: Esta função não possui retorno.
+        None
     """
 
-    query_votos = """
-    SELECT COUNT(*)
-    FROM registro_voto
-    """
-
-    cursor.execute(query_votos)
-
+    cursor.execute("SELECT COUNT(*) FROM registro_voto")
     total_votos = cursor.fetchone()[0]
 
-    query_eleitores = """
-    SELECT COUNT(*)
-    FROM eleitor
-    WHERE votou = TRUE
-    """
-
-    cursor.execute(query_eleitores)
-
+    cursor.execute("SELECT COUNT(*) FROM eleitor WHERE votou = TRUE")
     total_eleitores = cursor.fetchone()[0]
 
     print("=" * 40)
     print("VALIDAÇÃO DE INTEGRIDADE")
     print("=" * 40)
-
-    print(
-        f"Votos registrados na urna: "
-        f"{total_votos}"
-    )
-
-    print(
-        f"Eleitores com voto registrado: "
-        f"{total_eleitores}"
-    )
-
-    print("\n" + "=" * 40)
+    print(f"Votos registrados na urna: {total_votos}")
+    print(f"Eleitores com voto registrado: {total_eleitores}")
 
     if total_votos == total_eleitores:
-
-        print("✅ INTEGRIDADE VALIDADA")
-
-        print(
-            "Nenhuma inconsistência encontrada."
-        )
-
+        print("\n✅ INTEGRIDADE VALIDADA\nNenhuma inconsistência encontrada.")
     else:
-
-        print("❌ ALERTA DE INCONSISTÊNCIA")
-
-        print("Os totais não coincidem.")
+        print("\n❌ ALERTA DE INCONSISTÊNCIA\nOs totais não coincidem.")
 
     input("\nPressione Enter para voltar...")

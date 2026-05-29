@@ -18,10 +18,11 @@ CREATE TABLE Candidato(
 
 CREATE TABLE Eleitor(
 id_eleitor int primary key auto_increment,
-CPF VARCHAR(30) unique not null,
+CPF VARCHAR(12) unique not null,
+cpf_prefixo4 VARCHAR(4) NOT NULL,
 nome_Completo varchar(100) not null,
 titulo varchar(15) unique not null,
-chave_Acesso VARCHAR(20) unique not null,
+chave_Acesso VARCHAR(8) unique not null,
 tipo_mesario boolean not null,
 votou boolean not null
 );
@@ -32,5 +33,5 @@ CREATE TABLE registro_Voto(
     FOREIGN KEY (numero_Candidato)
         REFERENCES Candidato(numero_Candidato),
     data_voto TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    protocolo VARCHAR(30)
+    protocolo VARCHAR(12)
 ); 
