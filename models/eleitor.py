@@ -8,7 +8,7 @@ consulta e listagem de eleitores do sistema.
 from utils.cripto.cpf import criptografar_cpf
 from utils.cripto.chave import criptografar_chave, descriptografar_chave
 from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
-
+from utils.validacoes import gerar_chave
 from utils.validacoes import (
     validar_cpf,
     validar_titulo,
@@ -149,9 +149,12 @@ def editar_eleitor(cursor, conexao):
     print("\n=== NOVOS DADOS ===")
     novo_nome = input("Novo nome: ")
     novo_titulo = input("Novo título: ")
-    nova_chave = input("Nova chave de acesso: ")
+    
+    nova_chave = gerar_chave(novo_nome)
 
-    nova_chave_criptografada = criptografar_chave(nova_chave)
+    print(f"\nNova chave: {nova_chave}")
+
+    nova_chave_criptografada = criptografar_chave(nova_chave)   
 
     tipo_mesario = input("É mesário? (s/n): ").lower()
     mesario_bool = tipo_mesario == "s"

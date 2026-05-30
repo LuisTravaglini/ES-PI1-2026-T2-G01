@@ -278,20 +278,15 @@ def protocolo_votacao(numero_candidato: int) -> str:
     return f"V{letras_aleatorias}26{int(numero_candidato):02d}{numeros_aleatorios}"
 
 
-def realizar_voto(cursor, conexao, id_eleitor: int):
+def realizar_voto(cursor, conexao, id_eleitor):
     """
     Registra o voto do eleitor no sistema.
-
-    Args:
-        cursor: Cursor do MySQL.
-        conexao: Conexão MySQL.
-        id_eleitor (int): Identificador único do eleitor.
-
-    Returns:
-        None
     """
-    confirmar = ''
-    while confirmar != 's':
+
+    confirmar = ""
+
+    while confirmar != "s":
+
         print("=" * 30)
         print("SEU VOTO PARA PRESIDENTE")
         print("=" * 30)
@@ -299,41 +294,58 @@ def realizar_voto(cursor, conexao, id_eleitor: int):
         try:
             input_num_candidato = int(input("\nNúmero: "))
         except ValueError:
-            print("Número inválido.")
-            input("\nPressione Enter para voltar...")
-            return
+            print("❌ Número inválido.")
+            continue
 
         cursor.execute(
             """
-            SELECT nome_Completo, partido, numero_Candidato
+            SELECT nome_Completo,
+                   partido,
+                   numero_Candidato
             FROM candidato
             WHERE numero_Candidato = %s
             """,
             (input_num_candidato,)
         )
+
         nome_associado = cursor.fetchone()
 
-        # se não existe candidato, é voto nulo
+        # VOTO NULO
         if not nome_associado:
+
             print("=" * 30)
             print("⚠️ VOTO NULO")
             print("=" * 30)
 
-            confirmar_nulo = input("\nConfirmar voto nulo? (s/n): ").lower()
-            if confirmar_nulo != "s":
-                print("Retornando...")
-                return
+            confirmar_nulo = input(
+                "\nConfirmar voto nulo? (s/n): "
+            ).lower()
 
-            protocolo = protocolo_votacao(0)  # opcional: 00 como “nulo”
+            if confirmar_nulo != "s":
+                print("\nRetornando para seleção do candidato...\n")
+                continue
+
+            protocolo = protocolo_votacao(0)
+
             ordem_alfa_protocolo(protocolo)
-            protocolo_criptografado = criptografar_protocolo(protocolo)
+
+            protocolo_criptografado = (
+                criptografar_protocolo(protocolo)
+            )
 
             cursor.execute(
                 """
-                INSERT INTO registro_voto (numero_Candidato, protocolo)
+                INSERT INTO registro_voto
+                (
+                    numero_Candidato,
+                    protocolo
+                )
                 VALUES (%s, %s)
                 """,
-                (None, protocolo_criptografado)
+                (
+                    None,
+                    protocolo_criptografado
+                )
             )
 
             cursor.execute(
@@ -346,32 +358,57 @@ def realizar_voto(cursor, conexao, id_eleitor: int):
             )
 
             conexao.commit()
-            print("\n✅ Voto nulo registrado!")
-            print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
-            return
 
-        # candidato existe
+            print("\n✅ Voto nulo registrado!")
+            print(
+                f"\nPROTOCOLO DE VOTAÇÃO: "
+                f"{protocolo}"
+            )
+
+            return True
+
+        # CANDIDATO ENCONTRADO
+
         print("=" * 30)
         print(f"\nNome: {nome_associado[0]}")
         print(f"Partido: {nome_associado[1]}")
         print(f"Número: {nome_associado[2]}")
 
-        confirmar = input("\nConfirmar voto? (s/n): ").lower()
-        if confirmar != "s":
-            print("\n⚠️ Voto não confirmado.")
-            print("Retornando...\n")
-            return
+        confirmar = input(
+            "\nConfirmar voto? (s/n): "
+        ).lower()
 
-    protocolo = protocolo_votacao(input_num_candidato)
+        if confirmar != "s":
+
+            print("\n⚠️ Voto não confirmado.")
+            print(
+                "Retornando para seleção "
+                "do candidato...\n"
+            )
+
+    protocolo = protocolo_votacao(
+        input_num_candidato
+    )
+
     ordem_alfa_protocolo(protocolo)
-    protocolo_criptografado = criptografar_protocolo(protocolo)
+
+    protocolo_criptografado = (
+        criptografar_protocolo(protocolo)
+    )
 
     cursor.execute(
         """
-        INSERT INTO registro_voto (numero_Candidato, protocolo)
+        INSERT INTO registro_voto
+        (
+            numero_Candidato,
+            protocolo
+        )
         VALUES (%s, %s)
         """,
-        (input_num_candidato, protocolo_criptografado)
+        (
+            input_num_candidato,
+            protocolo_criptografado
+        )
     )
 
     cursor.execute(
@@ -386,11 +423,26 @@ def realizar_voto(cursor, conexao, id_eleitor: int):
     conexao.commit()
 
     with open(LOG, "a", encoding="utf-8") as f:
-        horario = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        f.write(f"\n[{horario}] SUCESSO: Voto realizado com sucesso.\n")
+
+        horario = datetime.now().strftime(
+            '%Y-%m-%d %H:%M:%S'
+        )
+
+        f.write(
+            f"\n[{horario}] "
+            f"SUCESSO: Voto realizado com sucesso.\n"
+        )
 
     print("\n✅ Voto registrado com sucesso!")
-    print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
+    print(
+        f"\nPROTOCOLO DE VOTAÇÃO: "
+        f"{protocolo}"
+    )
+
+    return True
+    
+
+
 
 
 def estatistica_comparecimento(cursor):
