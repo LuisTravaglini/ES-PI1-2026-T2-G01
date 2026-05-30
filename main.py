@@ -144,7 +144,7 @@ while opcao == 0:
                     print("=== VOTAÇÃO ===")
                     print("1 - Votar")
                     print("2 - Encerrar Votação")
-                    print("3 - Voltar")
+                   
 
                     vot = ler_opcao([1, 2, 3])
 
@@ -219,8 +219,6 @@ while opcao == 0:
                                 print("ALERTA: Tentativa de acesso negado.(Dados inválidos)")
                                 input("\nPressione Enter para voltar...")
 
-                        case 3:
-                            break
 
             case 2:
                 limpar_menu()
@@ -233,60 +231,85 @@ while opcao == 0:
 
                 match aud:
                     case 1:
-                        nome = print("Digite seu nome: ")
-                        chave_Acesso = print("Digite sua chave de acesso: ")
+                        titulo = input("Digite seu título: ")
+                        cpf4 = input("Digite os 4 primeiros dígitos do CPF: ")
+                        chave_acesso = input("Digite sua chave de acesso: ")
 
-                        chave_criptografado = criptografar_chave(chave_Acesso)
+                        cpf4 = _so_digitos(cpf4)
+                        chave_criptografado = criptografar_chave(chave_acesso)
 
                         query = """
-                        SELECT id_eleitor, tipo_mesario
+                        SELECT tipo_mesario
                         FROM eleitor
-                        WHERE nome_Completo = %s
+                        WHERE titulo = %s
+                        AND cpf_prefixo4 = %s
                         AND chave_Acesso = %s;
                         """
 
-                        cursor.execute(query, (nome, chave_criptografado))
+                        cursor.execute(
+                            query,
+                            (
+                                titulo,
+                                cpf4,
+                                chave_criptografado
+                            )
+                        )
+
                         result = cursor.fetchone()
 
-                        if result:
-                            tipo_mesario = result[2]
-                            if tipo_mesario == 1:
-                                with open(LOG, "r", encoding="utf-8") as f:
-                                    print(f.read())
-                            else:
-                                print("ALERTA: Apenas mesários podem acessar os logs de ocorrência")
-                                input("\nPressione Enter para voltar...")
+                        if result and result[0] == 1:
+
+                            with open(LOG, "r", encoding="utf-8") as f:
+                                print(f.read())
+
+                            input("\nPressione Enter para voltar...")
+
+                        else:
+
+                            print(
+                                "ALERTA: Acesso permitido apenas para mesários."
+                            )
+
+                            input("\nPressione Enter para voltar...")
 
                     case 2:
-                        nome = print("Digite seu nome: ")
-                        chave_Acesso = print("Digite sua chave de acesso: ")
+                        titulo = input("Digite seu título: ")
+                        cpf4 = input("Digite os 4 primeiros dígitos do CPF: ")
+                        chave_acesso = input("Digite sua chave de acesso: ")
 
-                        chave_criptografado = criptografar_chave(chave_Acesso)
+                        cpf4 = _so_digitos(cpf4)
+                        chave_criptografado = criptografar_chave(chave_acesso)
 
                         query = """
-                        SELECT id_eleitor, tipo_mesario
+                        SELECT tipo_mesario
                         FROM eleitor
-                        WHERE nome_Completo = %s
-                        AND chave_Acesso = %s 
+                        WHERE titulo = %s
+                        AND cpf_prefixo4 = %s
+                        AND chave_Acesso = %s;
                         """
 
-                        cursor.execute(query, (nome, chave_criptografado))
-                        result - cursor.fetchone()
+                        cursor.execute(
+                            query,
+                            (
+                                titulo,
+                                cpf4,
+                                chave_criptografado
+                            )
+                        )
+                        result = cursor.fetchone()
 
-                        if result:
-                            tipo_mesario = result [2]
-                            if tipo_mesario == 1:
-                                with open(LOG1, "r", encoding="utf-8") as f:
-                                    print(f.read())
+                        if result and result[0] == 1:
+                            with open(LOG1, "r", encoding="utf-8") as f:
+                                print(f.read())
+                            input("\nPressione Enter para voltar...")
 
-                            else:
-                                print("ALERTA: Apenas mesários podem acessar os Protocolos de votação")
-                                input("\nPressione Enter para voltar...")
+                        else:
+                            print(
+                                "ALERTA: Acesso permitido apenas para mesários."
+                            )
+                            input("\nPressione Enter para voltar...")
 
                         
-
-
-
             case 3:
                 limpar_menu()
                 votacao.resultado(cursor)
@@ -307,7 +330,7 @@ while opcao == 0:
                             limpar_menu()
                             votacao.validacao_integridade(cursor)
                         case 3:
-                            break
+                            filtros = ''
 
             case 4:
                 opcao = 0
