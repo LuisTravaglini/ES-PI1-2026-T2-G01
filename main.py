@@ -14,6 +14,7 @@ import models.votacao as votacao
 from datetime import datetime
 
 LOG = "logs/auditoria.log"
+LOG1 = "logs/protocolo.log"
 
 conexao = get_conexao()
 cursor = conexao.cursor()
@@ -223,7 +224,68 @@ while opcao == 0:
 
             case 2:
                 limpar_menu()
-                votacao.auditoria(votacao_aberta)
+                print("=== AUDITORIA ===")
+                print("1 - Exibir logs de Ocorrência")
+                print("2 - Exibir Protocolos de votação")
+                print("3 - Voltar")
+                
+                aud = ler_opcao([1, 2, 3])
+
+                match aud:
+                    case 1:
+                        nome = print("Digite seu nome: ")
+                        chave_Acesso = print("Digite sua chave de acesso: ")
+
+                        chave_criptografado = criptografar_chave(chave_Acesso)
+
+                        query = """
+                        SELECT id_eleitor, tipo_mesario
+                        FROM eleitor
+                        WHERE nome_Completo = %s
+                        AND chave_Acesso = %s;
+                        """
+
+                        cursor.execute(query, (nome, chave_criptografado))
+                        result = cursor.fetchone()
+
+                        if result:
+                            tipo_mesario = result[2]
+                            if tipo_mesario == 1:
+                                with open(LOG, "r", encoding="utf-8") as f:
+                                    print(f.read())
+                            else:
+                                print("ALERTA: Apenas mesários podem acessar os logs de ocorrência")
+                                input("\nPressione Enter para voltar...")
+
+                    case 2:
+                        nome = print("Digite seu nome: ")
+                        chave_Acesso = print("Digite sua chave de acesso: ")
+
+                        chave_criptografado = criptografar_chave(chave_Acesso)
+
+                        query = """
+                        SELECT id_eleitor, tipo_mesario
+                        FROM eleitor
+                        WHERE nome_Completo = %s
+                        AND chave_Acesso = %s 
+                        """
+
+                        cursor.execute(query, (nome, chave_criptografado))
+                        result - cursor.fetchone()
+
+                        if result:
+                            tipo_mesario = result [2]
+                            if tipo_mesario == 1:
+                                with open(LOG1, "r", encoding="utf-8") as f:
+                                    print(f.read())
+
+                            else:
+                                print("ALERTA: Apenas mesários podem acessar os Protocolos de votação")
+                                input("\nPressione Enter para voltar...")
+
+                        
+
+
 
             case 3:
                 limpar_menu()

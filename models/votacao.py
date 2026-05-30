@@ -151,9 +151,8 @@ def auditoria(votacao_aberta: bool):
     Returns:
         None
     """
-    if not votacao_aberta:
-        print("A votação precisa estar aberta para auditar.")
-    input("\nPressione Enter para voltar...")
+    
+    
 
 
 def resultado(cursor):
