@@ -189,7 +189,7 @@ while opcao == 0:
                         case 2:
                             limpar_menu()
 
-                            titulo = input("Digite seu titulo: ")
+                            titulo = _so_digitos(input("Digite seu titulo: "))
                             cpf4 = input("Digite os 4 primeiros dígitos do CPF: ")
                             chave = input("Digite sua chave de acesso: ")
 

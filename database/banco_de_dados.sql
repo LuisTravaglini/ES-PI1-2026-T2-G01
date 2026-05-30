@@ -2,13 +2,7 @@ CREATE DATABASE sist_votacao;
 
 USE sist_votacao;
 
--- CREATE TABLE Candidato(
--- id_candidato int primary key auto_increment,
--- numero_Candidato int unique not null,
--- nome_Completo varchar(100) unique not null,
--- partido varchar(20) not null,
--- votos int
--- );
+
 CREATE TABLE Candidato(
     id_candidato INT PRIMARY KEY AUTO_INCREMENT,
     numero_Candidato INT UNIQUE NOT NULL,

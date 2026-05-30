@@ -290,76 +290,77 @@ def realizar_voto(cursor, conexao, id_eleitor: int):
     Returns:
         None
     """
-
-    print("=" * 30)
-    print("SEU VOTO PARA PRESIDENTE")
-    print("=" * 30)
-
-    try:
-        input_num_candidato = int(input("\nNúmero: "))
-    except ValueError:
-        print("Número inválido.")
-        input("\nPressione Enter para voltar...")
-        return
-
-    cursor.execute(
-        """
-        SELECT nome_Completo, partido, numero_Candidato
-        FROM candidato
-        WHERE numero_Candidato = %s
-        """,
-        (input_num_candidato,)
-    )
-    nome_associado = cursor.fetchone()
-
-    # se não existe candidato, é voto nulo
-    if not nome_associado:
+    confirmar = ''
+    while confirmar != 's':
         print("=" * 30)
-        print("⚠️ VOTO NULO")
+        print("SEU VOTO PARA PRESIDENTE")
         print("=" * 30)
 
-        confirmar_nulo = input("\nConfirmar voto nulo? (s/n): ").lower()
-        if confirmar_nulo != "s":
-            print("Retornando...")
+        try:
+            input_num_candidato = int(input("\nNúmero: "))
+        except ValueError:
+            print("Número inválido.")
+            input("\nPressione Enter para voltar...")
             return
 
-        protocolo = protocolo_votacao(0)  # opcional: 00 como “nulo”
-        ordem_alfa_protocolo(protocolo)
-        protocolo_criptografado = criptografar_protocolo(protocolo)
-
         cursor.execute(
             """
-            INSERT INTO registro_voto (numero_Candidato, protocolo)
-            VALUES (%s, %s)
+            SELECT nome_Completo, partido, numero_Candidato
+            FROM candidato
+            WHERE numero_Candidato = %s
             """,
-            (None, protocolo_criptografado)
+            (input_num_candidato,)
         )
+        nome_associado = cursor.fetchone()
 
-        cursor.execute(
-            """
-            UPDATE eleitor
-            SET votou = TRUE
-            WHERE id_eleitor = %s
-            """,
-            (id_eleitor,)
-        )
+        # se não existe candidato, é voto nulo
+        if not nome_associado:
+            print("=" * 30)
+            print("⚠️ VOTO NULO")
+            print("=" * 30)
 
-        conexao.commit()
-        print("\n✅ Voto nulo registrado!")
-        print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
-        return
+            confirmar_nulo = input("\nConfirmar voto nulo? (s/n): ").lower()
+            if confirmar_nulo != "s":
+                print("Retornando...")
+                return
 
-    # candidato existe
-    print("=" * 30)
-    print(f"\nNome: {nome_associado[0]}")
-    print(f"Partido: {nome_associado[1]}")
-    print(f"Número: {nome_associado[2]}")
+            protocolo = protocolo_votacao(0)  # opcional: 00 como “nulo”
+            ordem_alfa_protocolo(protocolo)
+            protocolo_criptografado = criptografar_protocolo(protocolo)
 
-    confirmar = input("\nConfirmar voto? (s/n): ").lower()
-    if confirmar != "s":
-        print("\n⚠️ Voto não confirmado.")
-        print("Retornando...\n")
-        return
+            cursor.execute(
+                """
+                INSERT INTO registro_voto (numero_Candidato, protocolo)
+                VALUES (%s, %s)
+                """,
+                (None, protocolo_criptografado)
+            )
+
+            cursor.execute(
+                """
+                UPDATE eleitor
+                SET votou = TRUE
+                WHERE id_eleitor = %s
+                """,
+                (id_eleitor,)
+            )
+
+            conexao.commit()
+            print("\n✅ Voto nulo registrado!")
+            print(f"\nPROTOCOLO DE VOTAÇÃO: {protocolo}")
+            return
+
+        # candidato existe
+        print("=" * 30)
+        print(f"\nNome: {nome_associado[0]}")
+        print(f"Partido: {nome_associado[1]}")
+        print(f"Número: {nome_associado[2]}")
+
+        confirmar = input("\nConfirmar voto? (s/n): ").lower()
+        if confirmar != "s":
+            print("\n⚠️ Voto não confirmado.")
+            print("Retornando...\n")
+            return
 
     protocolo = protocolo_votacao(input_num_candidato)
     ordem_alfa_protocolo(protocolo)

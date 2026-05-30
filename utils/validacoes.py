@@ -114,15 +114,14 @@ def validar_titulo(titulo: str) -> bool:
 
     # REGRA:
     # resto 10 -> DV = 0
-    if resto1 == 10:
+    if resto1 == 0:
         dv1 = 0
 
     # REGRA ESPECIAL SP/MG
-    elif resto1 == 0 and uf in ["01", "02"]:
-        dv1 = 1
-
+    elif resto1 == 1:
+        dv1 = 1 if uf in ["01", "02"] else 0 
     else:
-        dv1 = resto1
+        dv1 = resto1 if resto1 != 10 else 0
 
     # -------------------------
     # CÁLCULO DO SEGUNDO DV
@@ -138,15 +137,14 @@ def validar_titulo(titulo: str) -> bool:
 
     # REGRA:
     # resto 10 -> DV = 0
-    if resto2 == 10:
+    if resto2 == 0:
         dv2 = 0
 
     # REGRA ESPECIAL SP/MG
-    elif resto2 == 0 and uf in ["01", "02"]:
-        dv2 = 1
-
+    elif resto2 == 1:
+        dv2 = 1 if uf in ["01", "02"] else 0
     else:
-        dv2 = resto2
+        dv2 = resto2 if resto2 != 10 else 0
 
     # COMPARA COM O TÍTULO INFORMADO
     return (
