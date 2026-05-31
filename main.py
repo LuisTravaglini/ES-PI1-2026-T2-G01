@@ -146,7 +146,7 @@ while opcao == 0:
                     print("2 - Encerrar Votação")
                    
 
-                    vot = ler_opcao([1, 2, 3])
+                    vot = ler_opcao([1, 2])
 
                     match vot:
                         case 1:
@@ -218,7 +218,7 @@ while opcao == 0:
                             else:
                                 print("ALERTA: Tentativa de acesso negado.(Dados inválidos)")
                                 input("\nPressione Enter para voltar...")
-
+                        
 
             case 2:
                 limpar_menu()

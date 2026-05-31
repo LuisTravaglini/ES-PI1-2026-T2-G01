@@ -183,16 +183,45 @@ def resultado(cursor):
         input("\nPressione Enter para voltar...")
         return
 
-    print("=" * 40)
-    print("RESULTADO DA ELEIÇÃO")
-    print("=" * 40)
+    # Votos nulos (numero_Candidato = NULL na tabela registro_voto)
+    cursor.execute("""
+    SELECT COUNT(*) FROM registro_voto
+    WHERE numero_Candidato IS NULL
+    """)
+    votos_nulos = cursor.fetchone()[0]
 
+    total_votos = sum(c[3] for c in candidatos) + votos_nulos
+
+    print("=" * 60)
+    print("RESULTADO DA ELEIÇÃO")
+    print("=" * 60)
+
+    # Tabela de candidatos
+    print(f"\n{'Nº':<6} {'Nome':<30} {'Partido':<15} {'Votos':>6} {'%':>7}")
+    print("-" * 60)
+    for nome, numero, partido, votos in candidatos:
+        pct = (votos / total_votos * 100) if total_votos > 0 else 0
+        print(f"{numero:<6} {nome:<30} {partido:<15} {votos:>6} {pct:>6.2f}%")
+
+    # Votos nulos
+    pct_nulos = (votos_nulos / total_votos * 100) if total_votos > 0 else 0
+    print("-" * 60)
+    print(f"{'---':<6} {'VOTO NULO':<30} {'---':<15} {votos_nulos:>6} {pct_nulos:>6.2f}%")
+    print("-" * 60)
+    print(f"{'TOTAL DE VOTOS':>53} {total_votos:>6}")
+
+    # Vencedor
+    print("\n" + "=" * 60)
     vencedor = candidatos[0]
-    print("\nVENCEDOR DA ELEIÇÃO")
-    print(f"Nome: {vencedor[0]}")
-    print(f"Número: {vencedor[1]}")
-    print(f"Partido: {vencedor[2]}")
-    print(f"Votos: {vencedor[3]}")
+    if vencedor[3] > 0:
+        print("🏆 VENCEDOR DA ELEIÇÃO")
+        print(f"   Nome:    {vencedor[0]}")
+        print(f"   Número:  {vencedor[1]}")
+        print(f"   Partido: {vencedor[2]}")
+        print(f"   Votos:   {vencedor[3]}")
+    else:
+        print("⚠️  Nenhum voto registrado ainda.")
+    print("=" * 60)
 
     input("\nPressione Enter para voltar...")
 
