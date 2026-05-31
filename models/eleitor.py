@@ -1,14 +1,13 @@
 """
 Módulo responsável pelo gerenciamento de eleitores.
 
-Este módulo contém funções para cadastro,
-consulta e listagem de eleitores do sistema.
+Este módulo contém funções para cadastro, consulta, edição, remoção
+e listagem de eleitores do sistema.
 """
 
 from utils.cripto.cpf import criptografar_cpf
 from utils.cripto.chave import criptografar_chave, descriptografar_chave
 from utils.cripto.protocolo import criptografar_protocolo, descriptografar_protocolo
-from utils.validacoes import gerar_chave
 from utils.validacoes import (
     validar_cpf,
     validar_titulo,
@@ -17,17 +16,45 @@ from utils.validacoes import (
 
 
 def _so_digitos(s: str) -> str:
+    """
+    Remove qualquer caractere que não seja dígito.
+
+    Args:
+        s (str): Texto de entrada.
+
+    Returns:
+        str: Apenas os dígitos contidos em s.
+    """
     return "".join(ch for ch in str(s) if ch.isdigit())
 
 
-def listar_eleitores(cursor):
+def listar_eleitores(cursor) -> None:
+    """
+    Lista todos os eleitores cadastrados no sistema.
+
+    Args:
+        cursor: Cursor responsável pelas consultas SQL.
+
+    Returns:
+        None
+    """
     cursor.execute("SELECT nome_Completo FROM Eleitor")
     for i in cursor.fetchall():
         print(i[0])
     input("\nPressione Enter para voltar...")
 
 
-def buscar_por_cpf(cursor, cpf):
+def buscar_por_cpf(cursor, cpf: str) -> None:
+    """
+    Busca um eleitor utilizando o CPF informado.
+
+    Args:
+        cursor: Cursor responsável pelas consultas SQL.
+        cpf (str): CPF do eleitor (com ou sem máscara).
+
+    Returns:
+        None
+    """
     cpf_criptografado = criptografar_cpf(cpf)
     cursor.execute(
         """
@@ -42,7 +69,17 @@ def buscar_por_cpf(cursor, cpf):
     input("\nPressione Enter para voltar...")
 
 
-def buscar_por_titulo(cursor, titulo):
+def buscar_por_titulo(cursor, titulo: str) -> None:
+    """
+    Busca um eleitor utilizando o título eleitoral informado.
+
+    Args:
+        cursor: Cursor responsável pelas consultas SQL.
+        titulo (str): Título eleitoral do eleitor.
+
+    Returns:
+        None
+    """
     cursor.execute(
         """
         SELECT nome_Completo
@@ -56,7 +93,25 @@ def buscar_por_titulo(cursor, titulo):
     input("\nPressione Enter para voltar...")
 
 
-def cadastrar_eleitor(cursor, conexao):
+def cadastrar_eleitor(cursor, conexao) -> None:
+    """
+    Realiza o cadastro de um novo eleitor no sistema.
+
+    Fluxo:
+    - Solicita CPF e valida matematicamente
+    - Solicita título e valida matematicamente
+    - Solicita nome completo
+    - Gera chave de acesso automaticamente e exibe ao usuário
+    - Pergunta se é mesário
+    - Armazena CPF criptografado, chave criptografada e cpf_prefixo4 em claro
+
+    Args:
+        cursor: Cursor responsável pelas consultas SQL.
+        conexao: Conexão ativa com o banco de dados.
+
+    Returns:
+        None
+    """
     print("=== Cadastro De Eleitor ===")
 
     cpf = input("Digite o CPF do eleitor: ")
@@ -65,7 +120,7 @@ def cadastrar_eleitor(cursor, conexao):
         cpf = input("Digite o CPF do eleitor: ")
 
     cpf_digits = _so_digitos(cpf)
-    cpf_prefixo4 = cpf_digits[:4]  # EM CLARO (4 dígitos)
+    cpf_prefixo4 = cpf_digits[:4]
 
     cpf_criptografado = criptografar_cpf(cpf_digits)
 
@@ -117,7 +172,25 @@ def cadastrar_eleitor(cursor, conexao):
     input("\nPressione Enter para voltar...")
 
 
-def editar_eleitor(cursor, conexao):
+def editar_eleitor(cursor, conexao) -> None:
+    """
+    Edita os dados de um eleitor identificado pelo CPF.
+
+    Fluxo:
+    - Solicita CPF
+    - Localiza o eleitor pelo CPF criptografado
+    - Exibe dados atuais (inclui descriptografia da chave)
+    - Solicita novo nome e novo título
+    - Gera uma nova chave automaticamente a partir do novo nome e salva criptografada
+    - Atualiza os campos no banco
+
+    Args:
+        cursor: Cursor responsável pelas consultas SQL.
+        conexao: Conexão ativa com o banco de dados.
+
+    Returns:
+        None
+    """
     cpf = input("Digite o CPF do eleitor que deseja editar: ")
     cpf_critografado = criptografar_cpf(cpf)
 
@@ -131,30 +204,29 @@ def editar_eleitor(cursor, conexao):
     """
 
     cursor.execute(query_busca, (cpf_critografado,))
-    eleitor = cursor.fetchone()
+    eleitor_encontrado = cursor.fetchone()
 
-    if not eleitor:
+    if not eleitor_encontrado:
         print("\n❌ Eleitor não encontrado.")
         input("\nPressione Enter para voltar...")
         return
 
-    chave_descriptografada = descriptografar_chave(eleitor[2])
+    chave_descriptografada = descriptografar_chave(eleitor_encontrado[2])
 
     print("\n=== DADOS ATUAIS ===")
-    print(f"Nome: {eleitor[0]}")
-    print(f"Título: {eleitor[1]}")
+    print(f"Nome: {eleitor_encontrado[0]}")
+    print(f"Título: {eleitor_encontrado[1]}")
     print(f"Chave: {chave_descriptografada}")
-    print(f"Mesário: {'Sim' if eleitor[3] else 'Não'}")
+    print(f"Mesário: {'Sim' if eleitor_encontrado[3] else 'Não'}")
 
     print("\n=== NOVOS DADOS ===")
     novo_nome = input("Novo nome: ")
     novo_titulo = input("Novo título: ")
-    
-    nova_chave = gerar_chave(novo_nome)
 
+    nova_chave = gerar_chave(novo_nome)
     print(f"\nNova chave: {nova_chave}")
 
-    nova_chave_criptografada = criptografar_chave(nova_chave)   
+    nova_chave_criptografada = criptografar_chave(nova_chave)
 
     tipo_mesario = input("É mesário? (s/n): ").lower()
     mesario_bool = tipo_mesario == "s"
@@ -184,7 +256,17 @@ def editar_eleitor(cursor, conexao):
     input("\nPressione Enter para voltar...")
 
 
-def remover_eleitor(cursor, conexao):
+def remover_eleitor(cursor, conexao) -> None:
+    """
+    Remove um eleitor do banco de dados, identificado pelo CPF.
+
+    Args:
+        cursor: Cursor responsável pelas consultas SQL.
+        conexao: Conexão ativa com o banco de dados.
+
+    Returns:
+        None
+    """
     cpf = input("Digite o CPF do eleitor que deseja remover: ")
     cpf_criptografado = criptografar_cpf(cpf)
 
@@ -195,15 +277,15 @@ def remover_eleitor(cursor, conexao):
     """
 
     cursor.execute(query_busca, (cpf_criptografado,))
-    eleitor = cursor.fetchone()
+    eleitor_encontrado = cursor.fetchone()
 
-    if not eleitor:
+    if not eleitor_encontrado:
         print("\n❌ Eleitor não encontrado.")
         input("\nPressione Enter para voltar...")
         return
 
     print("\n=== ELEITOR ENCONTRADO ===")
-    print(f"Nome: {eleitor[0]}")
+    print(f"Nome: {eleitor_encontrado[0]}")
 
     confirmar = input("\nDeseja realmente remover? (s/n): ").lower()
 
